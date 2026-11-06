@@ -3867,7 +3867,7 @@
          "availability": "A"
         },
         "got": {
-         "price": "21.89",
+         "price": "11.89",
          "currency": "EUR",
          "availability": "A"
         },
@@ -3885,7 +3885,7 @@
          "availability": "O"
         },
         "got": {
-         "price": "23.89",
+         "price": "13.89",
          "currency": "EUR",
          "availability": "O"
         },
@@ -3903,7 +3903,7 @@
          "availability": "A"
         },
         "got": {
-         "price": "27.89",
+         "price": "17.89",
          "currency": "EUR",
          "availability": "A"
         },
@@ -3961,13 +3961,13 @@
         "key": "HT-1068",
         "issues": [],
         "values": {
-         "price": "27.89",
+         "price": "17.89",
          "currency": "EUR",
          "availability": "A",
          "product_id": "HT-1068"
         },
         "raw": {
-         "price": "27,89",
+         "price": "17,89",
          "currency": "EUR",
          "availability": "Available",
          "product_id": "HT-1068"
@@ -3980,13 +3980,13 @@
         "key": "HT-1067",
         "issues": [],
         "values": {
-         "price": "23.89",
+         "price": "13.89",
          "currency": "EUR",
          "availability": "O",
          "product_id": "HT-1067"
         },
         "raw": {
-         "price": "23,89",
+         "price": "13,89",
          "currency": "EUR",
          "availability": "Out of Stock",
          "product_id": "HT-1067"
@@ -3999,13 +3999,13 @@
         "key": "HT-1066",
         "issues": [],
         "values": {
-         "price": "21.89",
+         "price": "11.89",
          "currency": "EUR",
          "availability": "A",
          "product_id": "HT-1066"
         },
         "raw": {
-         "price": "21,89",
+         "price": "11,89",
          "currency": "EUR",
          "availability": "Available",
          "product_id": "HT-1066"

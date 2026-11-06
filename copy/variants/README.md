@@ -11,7 +11,7 @@ with asserted text replacements. They were written and committed before the firs
 | Variant | What we changed |
 |---|---|
 | `reordered` | The category list sorts products by name, descending (SAP: ascending). |
-| `shipping_attribute` | Each product gets a `ShippingCost` (4,90 / 9,90 / 14,90 EUR by weight band). The product header shows it as its first attribute, `Shipping: 14,90 EUR`. |
+| `shipping_attribute` | Each product gets a `ShippingCost` (4,90 / 9,90 / 14,90 EUR by weight band in kg; grams converted since 06/11/2026). The product header shows it as its first attribute, `Shipping: 14,90 EUR`. |
 | `shipping_banner` | Same `ShippingCost`; a labelled line `Shipping 14,90 EUR` (sap.m Label + ObjectNumber) sits above the product header. |
 | `price_hidden` | As `shipping_banner`, but the product price is removed from the product header and from the category list. |
 

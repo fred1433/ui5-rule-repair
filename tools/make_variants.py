@@ -28,8 +28,11 @@ def write(variant, rel, text):
 
 
 def shipping_cost(product):
-    """Delivery fee by weight band (our invention, only present in the modified copies)."""
-    w = float(product["Weight"])
+    """Delivery fee by weight band in kg (our invention, only present in the modified copies).
+
+    Weights in grams are converted (fix of 06/11/2026 after review: an 80 G mousepad had been
+    charged as if it weighed 80 kg; only products weighed in grams changed)."""
+    w = float(product["Weight"]) / (1000 if product.get("WeightUnit") == "G" else 1)
     return "4.90" if w < 1 else "9.90" if w < 4 else "14.90"
 
 

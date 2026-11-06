@@ -41,12 +41,22 @@ def main():
         meta["row"] = {"w": rb["width"], "h": rb["height"],
                        "number": box(row.locator(".sapMObjectNumber").first, rb),
                        "shipping": box(row.get_by_text("incl.", exact=False).first, rb)}
-        head = page.locator('[id$="---product"] .sapMOH').first
+        # The product header is captured in a narrow window (one column), so that the price and
+        # the shipping line stay legible when the image is shown small, on a phone.
+        narrow = b.new_context(viewport={"width": 440, "height": 800}, device_scale_factor=3, locale="en-US")
+        np_ = narrow.new_page()
+        np_.goto(lc.url("delivered_price") + "#/category/LT/product/HT-1251")
+        _wait_for(np_, {"css": '[id$="---product"] .sapMOH .sapMOHNumberDiv'}, 60)
+        settle(np_)
+        time.sleep(0.5)
+        head = np_.locator('[id$="---product"] .sapMOH').first
         full = head.bounding_box()
-        hb = {"x": full["x"], "y": full["y"] + 30, "width": full["width"], "height": 135}
-        page.screenshot(path=str(OUT / "header.png"), clip=hb)
+        ship = np_.locator('[id$="---product"] .sapMObjectAttributeDiv').first.bounding_box()
+        top = full["y"] + 8
+        hb = {"x": full["x"], "y": top, "width": full["width"], "height": ship["y"] + ship["height"] + 14 - top}
+        np_.screenshot(path=str(OUT / "header.png"), clip=hb)
         meta["header"] = {"w": hb["width"], "h": hb["height"],
-                          "number": box(head.locator(".sapMOHNumberDiv").first, hb),
+                          "number": box(head.locator(".sapMOHNumberDiv").first, hb),  # noqa
                           "shipping": box(head.locator(".sapMObjectAttributeDiv").first, hb)}
         page.screenshot(path=str(OUT / "app.png"))
         b.close()

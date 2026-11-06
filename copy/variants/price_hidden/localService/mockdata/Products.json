@@ -605,7 +605,7 @@
 		"DimensionHeight": "0.2",
 		"DimensionUnit": "cm",
 		"CurrencyCode": "EUR",
-		"ShippingCost": "14.90"
+		"ShippingCost": "4.90"
 	},
 	{
 		"ProductId": "HT-1067",
@@ -624,7 +624,7 @@
 		"DimensionHeight": "0.2",
 		"DimensionUnit": "cm",
 		"CurrencyCode": "EUR",
-		"ShippingCost": "14.90"
+		"ShippingCost": "4.90"
 	},
 	{
 		"ProductId": "HT-1068",
@@ -643,7 +643,7 @@
 		"DimensionHeight": "0.6",
 		"DimensionUnit": "cm",
 		"CurrencyCode": "EUR",
-		"ShippingCost": "14.90"
+		"ShippingCost": "4.90"
 	},
 	{
 		"ProductId": "HT-1069",
@@ -662,7 +662,7 @@
 		"DimensionHeight": "3",
 		"DimensionUnit": "cm",
 		"CurrencyCode": "EUR",
-		"ShippingCost": "14.90"
+		"ShippingCost": "4.90"
 	},
 	{
 		"ProductId": "HT-1070",
@@ -1498,7 +1498,7 @@
 		"DimensionHeight": "23",
 		"DimensionUnit": "cm",
 		"CurrencyCode": "EUR",
-		"ShippingCost": "14.90"
+		"ShippingCost": "4.90"
 	},
 	{
 		"ProductId": "HT-1096",
@@ -1517,7 +1517,7 @@
 		"DimensionHeight": "19",
 		"DimensionUnit": "cm",
 		"CurrencyCode": "EUR",
-		"ShippingCost": "14.90"
+		"ShippingCost": "4.90"
 	},
 	{
 		"ProductId": "HT-1097",
@@ -1536,7 +1536,7 @@
 		"DimensionHeight": "19.7",
 		"DimensionUnit": "cm",
 		"CurrencyCode": "EUR",
-		"ShippingCost": "14.90"
+		"ShippingCost": "4.90"
 	},
 	{
 		"ProductId": "HT-6123",
@@ -1555,7 +1555,7 @@
 		"DimensionHeight": "0.8",
 		"DimensionUnit": "cm",
 		"CurrencyCode": "EUR",
-		"ShippingCost": "14.90"
+		"ShippingCost": "4.90"
 	},
 	{
 		"ProductId": "HT-6122",
@@ -1574,7 +1574,7 @@
 		"DimensionHeight": "9.2",
 		"DimensionUnit": "cm",
 		"CurrencyCode": "EUR",
-		"ShippingCost": "14.90"
+		"ShippingCost": "4.90"
 	},
 	{
 		"ProductId": "HT-6121",
@@ -1593,7 +1593,7 @@
 		"DimensionHeight": "9.2",
 		"DimensionUnit": "cm",
 		"CurrencyCode": "EUR",
-		"ShippingCost": "14.90"
+		"ShippingCost": "4.90"
 	},
 	{
 		"ProductId": "HT-6120",
@@ -1612,7 +1612,7 @@
 		"DimensionHeight": "1",
 		"DimensionUnit": "cm",
 		"CurrencyCode": "EUR",
-		"ShippingCost": "14.90"
+		"ShippingCost": "4.90"
 	},
 	{
 		"ProductId": "HT-6111",
@@ -1916,7 +1916,7 @@
 		"DimensionHeight": "3.9",
 		"DimensionUnit": "cm",
 		"CurrencyCode": "EUR",
-		"ShippingCost": "14.90"
+		"ShippingCost": "4.90"
 	},
 	{
 		"ProductId": "HT-8000",

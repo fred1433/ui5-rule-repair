@@ -13,4 +13,5 @@ jobs:
       - run: python -m playwright install --with-deps chromium
       - run: python -m pytest -q
       - run: python -m ui5rules replay
-      - run: git diff --stat -- results/TABLE.md
+      - name: the replay must reproduce the committed results
+        run: git diff --exit-code -- results/TABLE.md results/results.json

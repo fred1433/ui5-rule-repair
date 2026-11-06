@@ -48,14 +48,14 @@ def cell(r):
         return "bad", f"{b['price_exact_n']} of {n} exact, {b['wrong_accepted_n']} wrong exported"
     lost = len(b["missing"])
     if lost == n:
-        return "held", f"0 of {n}: run stopped, nothing exported"
+        return "bad", f"0 of {n}: run stopped, nothing exported"
     return "held", f"{b['price_exact_n']} of {n} exact, {b['held_for_review_n']} held"
 
 
 ORIGIN = {
     "sap": "SAP release, unmodified",
-    "round 1": "Our change, written before the first rule",
-    "round 2": "Our change, written after reading it",
+    "round 1": "My change, written before the first rule",
+    "round 2": "My change, written after reading it",
 }
 LABEL = {
     "base": "OpenUI5 1.154.0",
@@ -72,6 +72,9 @@ LABEL = {
     "sap_1.120.30": "OpenUI5 1.120.30",
     "sap_1.148.0": "OpenUI5 1.148.0",
 }
+
+
+NOTES = {"sap_1.120.30": ". The engine's click handling was changed after the first rule failed here in an earlier run"}
 
 
 def diff_lines(a, b):
@@ -130,13 +133,14 @@ def main():
         <ol class="steps">
           <li class="step">
             <h3>Failure report</h3>
-            <p>Built from the runs the model may see ({n_seen} of the {n_all} scenarios). It holds what the page showed and which records disagreed with SAP's data, never SAP's values.</p>
+            <p>Built from the runs the model may see ({n_seen} of the {n_all} scenarios). It holds what the page showed and which records disagreed with SAP's data, never SAP's prices.</p>
             <ul class="fails">{''.join(lines)}</ul>
             <p class="hash">SHA-256 <code>{E(prev['failure_report_sha256'])}</code><br>Replay rebuilds this report from a fresh run and refuses the recorded repair if one character differs.</p>
           </li>
           <li class="step">
             <h3>What the repair changed in the rule</h3>
-            <pre class="diff">{dl}</pre>
+            <p class="why">Two changes. The rule now reads price, currency and availability on the product page instead of the list row. And it finds list items by their UI5 CSS class (<code>li.sapMLIB</code>) instead of the ARIA role <code>listitem</code>, which 1.96.0 does not use; that holds on the four releases tested but ties the rule to UI5's internal class names.</p>
+            <details class="full"><summary>Full diff of the rule ({sum(1 for t, _ in d if t in ("add", "del"))} lines changed)</summary><pre class="diff">{dl}</pre></details>
           </li>
         </ol>
       </div>""")
@@ -160,13 +164,17 @@ def main():
         c0, t0 = cell(r0)
         c1, t1 = cell(rl)
         held = " <span class='tag'>held out</span>" if r0["role"] == "held_out" else ""
-        sb.append(f"<tr><td><strong>{E(LABEL[r0['id']])}</strong>{held}<span class='sub'>{E(r0['category_name'])}. {E(ORIGIN[r0['origin']])}</span></td>"
+        extra = NOTES.get(r0["id"], "")
+        sb.append(f"<tr><td><strong>{E(LABEL[r0['id']])}</strong>{held}<span class='sub'>{E(r0['category_name'])}. {E(ORIGIN[r0['origin']])}{E(extra)}</span></td>"
                   f"<td class='c-{c0}'>{E(t0)}</td><td class='c-{c1}'>{E(t1)}</td></tr>")
     tot = lambda st: (sum(r["bench"]["price_exact_n"] for r in st["results"] if r["expect"] != "hold_all"),
                       sum(r["bench"]["expected_n"] for r in st["results"] if r["expect"] != "hold_all"),
                       sum(r["bench"]["wrong_accepted_n"] for r in st["results"]))
     t_first, t_last = tot(first), tot(last)
 
+    for st in stages:  # the page says both rules hold every record in the price-hidden run
+        ph = scen(st, "price_hidden")["bench"]
+        assert ph["exported_n"] == 0 and ph["held_for_review_n"] == ph["expected_n"], st["proposal"]
     rh = crops["row"]
     hh = crops["header"]
     refused = res.get("refused")
@@ -181,7 +189,8 @@ def main():
         "{{HDR_W}}": f"{hh['w']}", "{{HDR_H}}": f"{hh['h']}",
         "{{OLD_PRICE}}": eur(f_row["got"]["price"]), "{{OLD_PRICE_RAW}}": E(f_rec["raw"]["price"] or ""),
         "{{OLD_PRICE_JSON}}": E(str(f_row["got"]["price"])),
-        "{{SAP_PRICE}}": eur(f_row["expected"]["price"]), "{{SAP_PRICE_JSON}}": E(str(f_row["expected"]["price"])),
+        "{{SAP_PRICE}}": eur(f_row["expected"]["price"]), "{{SAP_PRICE_PLAIN}}": E(str(f_row["expected"]["price"])),
+        "{{H13}}": str(scen(first, "price_hidden")["bench"]["held_for_review_n"]), "{{SAP_PRICE_JSON}}": E(str(f_row["expected"]["price"])),
         "{{AVAIL}}": E(str(f_row["got"]["availability"])),
         "{{F_STATUS}}": "passed" if f_sc["validator"]["status"] == "pass" else "flagged it",
         "{{F_EXACT}}": str(f_sc["bench"]["price_exact_n"]), "{{F_N}}": str(f_sc["bench"]["expected_n"]),

@@ -1,40 +1,61 @@
-"""Replay must refuse a recorded repair whose failure report no longer matches."""
+"""Replay accepts a recorded repair whose failure report matches, and refuses it otherwise.
+
+The browser is replaced by the results recorded in results/results.json, so both tests see the
+same runs; the only difference between them is the hash stored in the repair's meta.json.
+"""
 import json
 import shutil
+from pathlib import Path
+
+import pytest
 
 from ui5rules import __main__ as cli
 from ui5rules import agent, bench
 
+ROOT = Path(__file__).resolve().parent.parent
 
-def test_replay_refuses_a_repair_answering_another_report(tmp_path, monkeypatch):
+
+class _Ctx:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *a):
+        pass
+
+
+class _PW(_Ctx):
+    class chromium:
+        @staticmethod
+        def launch():
+            class B:
+                def close(self):
+                    pass
+            return B()
+
+
+@pytest.fixture
+def recorded(tmp_path, monkeypatch):
     links = agent.chain()
-    if len(links) < 2:
-        return
+    assert len(links) >= 2, "a generation and a repair must be recorded"
     for f in links[:2]:
         shutil.copytree(f, tmp_path / f.name)
-    meta_path = tmp_path / links[1].name / "meta.json"
-    meta = json.loads(meta_path.read_text())
-    meta["input_sha256"] = "0" * 64
-    meta_path.write_text(json.dumps(meta))
-    monkeypatch.setattr(agent, "PROPOSALS", tmp_path)
+    stages = json.loads((ROOT / "results/results.json").read_text())["stages"]
+    queue = [st["results"] for st in stages[:2]]
     obs = json.loads((links[0] / "observations.json").read_text())
+    monkeypatch.setattr(agent, "PROPOSALS", tmp_path)
     monkeypatch.setattr(cli, "_observe", lambda *a, **k: obs)
-    monkeypatch.setattr(bench, "run_all", lambda *a, **k: [])
+    monkeypatch.setattr(bench, "run_all", lambda *a, **k: queue.pop(0))
+    monkeypatch.setattr(cli, "LocalCopy", lambda *a, **k: _Ctx())
+    monkeypatch.setattr(cli, "sync_playwright", lambda: _PW())
+    return tmp_path / links[1].name / "meta.json"
 
-    class FakeLocal:
-        def __enter__(self): return self
-        def __exit__(self, *a): pass
 
-    class FakePW:
-        def __enter__(self): return self
-        def __exit__(self, *a): pass
-        class chromium:
-            @staticmethod
-            def launch():
-                class B:
-                    def close(self): pass
-                return B()
+def test_replay_accepts_the_repair_when_the_failure_report_matches(recorded):
+    assert cli.replay(write=False) == 0
 
-    monkeypatch.setattr(cli, "LocalCopy", lambda *a, **k: FakeLocal())
-    monkeypatch.setattr(cli, "sync_playwright", lambda: FakePW())
+
+def test_replay_refuses_the_repair_when_its_hash_answers_another_report(recorded):
+    meta = json.loads(recorded.read_text())
+    meta["input_sha256"] = "0" * 64
+    recorded.write_text(json.dumps(meta))
     assert cli.replay(write=False) == 1

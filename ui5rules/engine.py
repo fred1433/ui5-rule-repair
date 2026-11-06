@@ -163,7 +163,33 @@ def _pick(spec: dict, r: dict):
     return r["marks"][0], None
 
 
-NUM_TOKEN = re.compile(r"\d(?:[\d.,  ]*\d)?")
+NUM_TOKEN = re.compile(r"[-\u2212]?\d(?:[\d.,\u00a0 ]*\d)?")
+
+
+def parse_decimal(raw: str, nf: dict | None):
+    """Strict decimal parsing: keeps the sign, and refuses separators in the wrong places.
+
+    "1.003,90" with {"decimal": ",", "group": "."} -> 1003.90; "1.003.90" or "1.0.0,9" -> refused;
+    "1.003,90" read with the default format (decimal ".", group ",") -> refused, never 1.00390.
+    """
+    nf = nf or {"decimal": ".", "group": ","}
+    dec, grp = nf.get("decimal", "."), nf.get("group") or ""
+    tokens = NUM_TOKEN.findall(raw)
+    if len(tokens) != 1:
+        return None, {"kind": "type", "detail": f"expected one number in {raw!r}, found {len(tokens)}"}
+    s = tokens[0].replace("\u2212", "-").replace("\u00a0", "").replace(" ", "")
+    d, g = re.escape(dec), re.escape(grp)
+    grouped = rf"-?\d{{1,3}}(?:{g}\d{{3}})+(?:{d}\d+)?" if grp else None
+    plain = rf"-?\d+(?:{d}\d+)?"
+    if not (re.fullmatch(plain, s) or (grouped and re.fullmatch(grouped, s))):
+        return None, {"kind": "type", "detail": f"{raw!r} does not fit the number format (decimal {dec!r}, group {grp!r})"}
+    if grp:
+        s = s.replace(grp, "")
+    s = s.replace(dec, ".")
+    try:
+        return str(Decimal(s)), None
+    except InvalidOperation:
+        return None, {"kind": "type", "detail": f"not a decimal: {raw!r}"}
 
 
 def parse_value(f: dict, raw: str):
@@ -176,18 +202,7 @@ def parse_value(f: dict, raw: str):
         raw = m.group(1) if m.groups() else m.group(0)
     raw = raw.strip()
     if t == "decimal":
-        nf = f.get("number_format") or {"decimal": ".", "group": ","}
-        tokens = NUM_TOKEN.findall(raw)
-        if len(tokens) != 1:
-            return None, {"kind": "type", "detail": f"expected one number in {raw!r}, found {len(tokens)}"}
-        s = tokens[0].replace(" ", "").replace(" ", "")
-        if nf.get("group"):
-            s = s.replace(nf["group"], "")
-        s = s.replace(nf.get("decimal", "."), ".")
-        try:
-            return str(Decimal(s)), None
-        except InvalidOperation:
-            return None, {"kind": "type", "detail": f"not a decimal: {raw!r}"}
+        return parse_decimal(raw, f.get("number_format"))
     if t == "currency_code":
         codes = re.findall(r"\b[A-Z]{3}\b", raw)
         if len(codes) != 1:

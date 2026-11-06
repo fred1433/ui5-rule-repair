@@ -42,6 +42,23 @@ def test_decimal_parsing_with_german_separators(raw, value):
     assert parse_value(f, raw) == (value, None)
 
 
+@pytest.mark.parametrize("raw,fmt,value", [
+    ("-5,00", {"decimal": ",", "group": "."}, "-5.00"),
+    ("\u22125,00", {"decimal": ",", "group": "."}, "-5.00"),
+    ("1.003,90", None, None),            # German text read with the default (English) format: refused
+    ("1.003.90", {"decimal": ",", "group": "."}, None),
+    ("1.0.0,9", {"decimal": ",", "group": "."}, None),
+    ("10.03,90", {"decimal": ",", "group": "."}, None),
+    ("1,003.90", None, "1003.90"),
+    ("989.00", None, "989.00"),
+])
+def test_decimal_parsing_keeps_the_sign_and_refuses_misplaced_separators(raw, fmt, value):
+    f = {"type": "decimal", **({"number_format": fmt} if fmt else {})}
+    got, issue = parse_value(f, raw)
+    assert got == value
+    assert (issue is None) == (value is not None)
+
+
 def test_two_numbers_in_one_text_is_a_type_issue_not_a_guess():
     f = {"type": "decimal", "number_format": {"decimal": ",", "group": "."}}
     value, issue = parse_value(f, "989,00 EUR incl. 14,90 EUR shipping")

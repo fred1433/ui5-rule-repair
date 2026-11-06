@@ -26,7 +26,7 @@ Result of the last replay (`results/TABLE.md` holds the raw table, `results/resu
 | OpenUI5 1.120.30 | Laptops (held out) | SAP release, unmodified | 11 of 11 exact | 11 of 11 exact |
 | OpenUI5 1.148.0 | Laptops (held out) | SAP release, unmodified | 11 of 11 exact | 11 of 11 exact |
 
-Totals over the 12 runs where every price should be exported: **80 of 116 prices exact, 18 wrong values exported** with the first rule; **116 of 116 exact, 0 wrong** after one repair. In the 13th run the product price is removed from the screen: both rules hold all 11 records for review and export nothing.
+Totals over the 12 runs where a price should be exported: **80 of 116 prices exact, 18 wrong values exported** with the first rule; **116 of 116 exact, 0 wrong** after one repair. In the 13th run the product price is removed from the screen: both rules hold all 11 records for review and export none, as they should.
 
 Page: https://theaipipe.com/demos/ui5-rule-repair/
 
@@ -34,9 +34,11 @@ Page: https://theaipipe.com/demos/ui5-rule-repair/
 
 1. **Generation.** The agent opened the app, walked to the Laptops category and two products, and recorded a distilled view of the rendered DOM (`proposals/01-generate/observations.json`). From that and a business task ("for each laptop: reference, price, currency, availability") the model wrote the first rule. Nobody edited it.
 2. **Round 1 changes, written before the rule existed** (`tools/make_variants.py`, first commit): list reordered, a shipping line in the product header, a shipping amount above the header, the product price removed. The first rule survived all four: it reads the price in the category **list row**, which none of them touched.
-3. **Round 2 change, written after reading the rule, aimed at it on purpose:** the list row shows the delivered price (product plus shipping). The rule exported 1003.90 for a 989 EUR laptop, 11 of 11 laptops wrong, and its runtime checks passed. Only the comparison with SAP's data caught it.
-4. **A real break, not ours:** SAP's own 1.96.0 release of the same demo uses `listbox`/`option` roles where 1.154.0 uses `list`/`listitem`. The rule's first wait never ended; nothing was exported (no wrong value).
-5. **Repair.** The failure report (what the page showed, which records disagreed with SAP, never SAP's values) went to the model with fresh observations of the two failing versions. The repaired rule reads price, currency and availability on the product page and no longer depends on the list role. Replay re-runs it on all 13 scenarios, including 6 the model never saw (Mice category, SAP 1.120.30 and 1.148.0).
+3. **Round 2 change, written after reading the rule, aimed at it on purpose** (after seeing that the generated rule read prices from the category list, I changed that list to include shipping): the list row shows the delivered price (product plus shipping). The rule exported 1003.90 for a 989 EUR laptop, 11 of 11 laptops wrong, and its runtime checks passed. Only the comparison with SAP's data caught it.
+4. **An older SAP release, unmodified:** SAP's 1.96.0 release of the same demo uses `listbox`/`option` roles where 1.154.0 uses `list`/`listitem`. The rule's first wait never ended; nothing was exported (no wrong value).
+5. **Repair.** The failure report (what the page showed, which records disagreed with SAP and the ids of missing records, never SAP's prices) went to the model with fresh observations of the two failing versions. The repaired rule reads price, currency and availability on the product page and no longer depends on the list role. Replay re-runs it on all 13 scenarios, including 6 the model never saw (Mice category, SAP 1.120.30 and 1.148.0; see the note on 1.120.30 below). The repair reads `li.sapMLIB` and `sapMOH…` CSS classes rather than an ARIA role or a label: it holds on the four releases tested, but it ties the rule to UI5's internal class names.
+
+**How the SAP releases were chosen.** After the first rule was generated. 1.154.0 is the current release; 1.96.0, 1.120.30 and 1.148.0 are releases sdk.openui5.org still serves for this demo (the brief's review had checked them; 1.108.0 and 1.136.0, also tried, answer 404). No release was dropped because of its result.
 
 ## Two checks, kept apart
 
@@ -45,19 +47,19 @@ Page: https://theaipipe.com/demos/ui5-rule-repair/
 
 ## Frozen model output, linked by hash
 
-`proposals/NN-*/` holds the prompt, the model's raw answer, the rule and `meta.json` (SHA-256 of the input, prompt, parent rule and rule). Proposals were made with `python -m ui5rules generate` and `python -m ui5rules repair`, which call `claude -p` on a Claude subscription with every tool disabled, in an empty folder (they refuse to run if `ANTHROPIC_API_KEY` is set). Model: claude-opus-5-5. API cost: 0 $.
+`proposals/NN-*/` holds the prompt, the model's raw answer, the rule and `meta.json` (SHA-256 of the input, prompt, parent rule and rule). The generation and the repair were made with `python -m ui5rules generate` and `python -m ui5rules repair`, which call `claude -p` on a Claude subscription with every tool disabled, in an empty folder (they refuse to run if `ANTHROPIC_API_KEY` is set). Model: claude-opus-5-5. API cost: 0 $.
 
 Replay calls no model. It re-observes the app and checks the observation hash of the generation, rebuilds the failure report from fresh runs and **refuses the recorded repair if the report's hash differs** (`tests/test_replay_refusal.py`).
 
 ## The rule format
 
-Ours, documented in `ui5rules/rules.py` (`FORMAT_DOC`): plain JSON, no code. Navigation steps (`wait_for`, `click`, `read_count`), an item locator, and per field: where it is (`item`, `detail`, `url`), a locator by CSS, exact text, ARIA role or visible label, a type (`id`, `decimal` with its separators, `currency_code`, `enum` with a map, `text`) and optional contracts (`pick: single`, label anchor). Generated UI5 ids (`__xmlview0--…`, `__item5-…`) are refused by the static check. The format of your own engine is unknown to us; mapping one rule to it is a small, concrete exercise.
+Ours, documented in `ui5rules/rules.py` (`FORMAT_DOC`): plain JSON, no code. Navigation steps (`wait_for`, `click`, `read_count`), an item locator, and per field: where it is (`item`, `detail`, `url`), a locator by CSS, exact text, ARIA role or visible label, a type (`id`, `decimal` with its separators, `currency_code`, `enum` with a map, `text`) and optional contracts (`pick: single`, label anchor). Generated UI5 ids (`__xmlview0--…`, `__item5-…`) are refused by the static check. The format of your own engine is unknown to me; mapping one rule to it is a concrete exercise.
 
 ## The app copy
 
 `copy/sdk/` is a byte-for-byte cache of the files sdk.openui5.org serves for the demo and its UI5 runtime (1.96.0, 1.120.30, 1.148.0, 1.154.0), Apache License 2.0 (`copy/LICENSE-OpenUI5.txt`, `NOTICE`). `copy/variants/` holds our modifications, listed in `copy/variants/README.md`. `ui5rules/server.py` serves them on 127.0.0.1 only and never fetches from SAP during runs or tests, so repeated runs put no load on sdk.openui5.org. The app's `Component-preload.js` is not served, in any variant, so that the individual (possibly modified) view files are the ones in use.
 
-The engine settles the DOM before each click and retries a click once when nothing happened: UI5 1.96.0 swallows the first click on a list item in headless Chromium. That policy applies to every rule alike.
+The engine settles the DOM before each click and retries a click once when nothing happened. **This was changed after the first rule had been recorded**: in an earlier run the first rule failed 0 of 11 on 1.120.30 (the engine clicked a "No data" placeholder row before the list loaded), and 1.96.0 ignores the first click on a list item in headless Chromium. The change applies to every rule alike; with it, the first rule passes on 1.120.30. So 1.120.30 is held out from the model, not from the engine's development.
 
 ## Tests
 
@@ -65,11 +67,11 @@ The engine settles the DOM before each click and retries a click once when nothi
 python -m pytest -q
 ```
 
-Offline tests (parsing, validator contracts, oracle join, hashes, refusal of a mismatched repair, SAP data identical across releases) and browser tests on the local copy.
+Offline tests (strict number parsing: sign kept, misplaced separators refused; validator contracts; oracle join; hashes; replay accepts the recorded repair with the matching report and refuses it once the hash is altered; SAP data identical across releases) and browser tests on the local copy. CI re-runs the replay and fails if `results/` differ from the committed files.
 
 ## Not done
 
-* A second OpenUI5 app (Worklist) was not attempted; the multi-app claim rests on four SAP releases and two categories of one app.
+* Tested on one application, across four OpenUI5 releases and two product categories. Worklist was not tested.
 * The runs are desktop only (1440x900); phone layouts were not tested.
 * One generation and one repair were recorded. How often the model writes a rule that reads the list row (rather than the product page) was not measured.
 
