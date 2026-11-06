@@ -42,8 +42,9 @@ def main():
                        "number": box(row.locator(".sapMObjectNumber").first, rb),
                        "shipping": box(row.get_by_text("incl.", exact=False).first, rb)}
         head = page.locator('[id$="---product"] .sapMOH').first
-        hb = head.bounding_box()
-        head.screenshot(path=str(OUT / "header.png"))
+        full = head.bounding_box()
+        hb = {"x": full["x"], "y": full["y"] + 30, "width": full["width"], "height": 135}
+        page.screenshot(path=str(OUT / "header.png"), clip=hb)
         meta["header"] = {"w": hb["width"], "h": hb["height"],
                           "number": box(head.locator(".sapMOHNumberDiv").first, hb),
                           "shipping": box(head.locator(".sapMObjectAttributeDiv").first, hb)}

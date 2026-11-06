@@ -1,0 +1,1446 @@
+TASK the rule serves
+For each laptop in this product catalog, extract: product_id (the product reference), price (the product's price, as a decimal number), currency (ISO 4217 code) and availability (output code: A = available, O = out of stock, D = discontinued). Write the rule for the category "Laptops": put the category name in parameters.category and write "{category}" wherever the rule needs it, so that the same rule can run on another category.
+
+The rule below was run on modified versions of the app and failed. The failure report says what the runtime validator saw on the page and what the comparison with known-good records found (reference values are withheld). Propose a corrected rule in the same format. It must still work on the unmodified app and must hold a record for review rather than output a value it cannot tell apart.
+
+CURRENT RULE
+```json
+{
+  "format": "ui5-rule-repair/rule@1",
+  "name": "Product catalog - {category} - id, price, currency, availability",
+  "parameters": {
+    "category": "Laptops"
+  },
+  "steps": [
+    {
+      "action": "wait_for",
+      "target": {
+        "css": "#container-cart---homeView--categoryList ul[role=list]"
+      }
+    },
+    {
+      "action": "read_count",
+      "target": {
+        "css": "div.sapMLIBCounter",
+        "within": {
+          "role": "listitem",
+          "has_text": "{category}",
+          "within": {
+            "css": "#container-cart---homeView--categoryList"
+          }
+        }
+      },
+      "regex": "(\\d+)"
+    },
+    {
+      "action": "click",
+      "target": {
+        "text": "{category}",
+        "within": {
+          "css": "#container-cart---homeView--categoryList"
+        }
+      },
+      "then_wait_for": {
+        "role": "main",
+        "name": "{category} Items of Category"
+      }
+    },
+    {
+      "action": "wait_for",
+      "target": {
+        "css": "#container-cart---category--productList li.sapMLIB",
+        "pick": "first"
+      }
+    }
+  ],
+  "items": {
+    "locator": {
+      "css": "#container-cart---category--productList li.sapMLIB"
+    },
+    "open": true,
+    "detail_ready": {
+      "css": "#container-cart---product--page .sapMOHTitle"
+    }
+  },
+  "fields": {
+    "product_id": {
+      "from": "url",
+      "regex": "/product/([^/?#]+)",
+      "type": "id",
+      "pattern": "[A-Z]+-\\d+"
+    },
+    "price": {
+      "from": "item",
+      "locator": {
+        "css": ".sapMObjectNumber .sapMObjectNumberText"
+      },
+      "type": "decimal",
+      "number_format": {
+        "decimal": ",",
+        "group": "."
+      }
+    },
+    "currency": {
+      "from": "item",
+      "locator": {
+        "css": ".sapMObjectNumber .sapMObjectNumberUnit"
+      },
+      "type": "currency_code"
+    },
+    "availability": {
+      "from": "item",
+      "locator": {
+        "css": ".sapMObjStatus .sapMObjStatusText"
+      },
+      "type": "enum",
+      "map": {
+        "Available": "A",
+        "Out of Stock": "O",
+        "Discontinued": "D"
+      }
+    }
+  },
+  "key": "product_id",
+  "count_check": true
+}
+```
+
+FAILURE REPORT
+```json
+{
+  "rule_sha256": "c924540a126d6e896ca705d90333d69ad12af445f5e5a772cbb94dbc6050924d",
+  "failing_scenarios": [
+    {
+      "scenario": "delivered_price",
+      "app_version": "OpenUI5 1.154.0, modified copy 'delivered_price'",
+      "category": "Laptops",
+      "expected_behaviour": "export every product with its exact price",
+      "runtime_validator": {
+        "status": "pass",
+        "record_issues": [],
+        "batch_issues": []
+      },
+      "known_good_check": {
+        "note": "comparison with reference records kept by the bench; reference values are withheld",
+        "records_expected": 11,
+        "records_exported": 11,
+        "exported_but_wrong": [
+          {
+            "product_id": "HT-1000",
+            "fields": [
+              "price"
+            ],
+            "extracted": {
+              "price": "970.90"
+            }
+          },
+          {
+            "product_id": "HT-1001",
+            "fields": [
+              "price"
+            ],
+            "extracted": {
+              "price": "1263.90"
+            }
+          },
+          {
+            "product_id": "HT-1002",
+            "fields": [
+              "price"
+            ],
+            "extracted": {
+              "price": "1584.90"
+            }
+          },
+          {
+            "product_id": "HT-1003",
+            "fields": [
+              "price"
+            ],
+            "extracted": {
+              "price": "1664.90"
+            }
+          },
+          {
+            "product_id": "HT-1011",
+            "fields": [
+              "price"
+            ],
+            "extracted": {
+              "price": "2313.90"
+            }
+          },
+          {
+            "product_id": "HT-1251",
+            "fields": [
+              "price"
+            ],
+            "extracted": {
+              "price": "1003.90"
+            }
+          },
+          {
+            "product_id": "HT-1253",
+            "fields": [
+              "price"
+            ],
+            "extracted": {
+              "price": "990.90"
+            }
+          },
+          {
+            "product_id": "HT-8000",
+            "fields": [
+              "price"
+            ],
+            "extracted": {
+              "price": "813.90"
+            }
+          },
+          {
+            "product_id": "HT-8001",
+            "fields": [
+              "price"
+            ],
+            "extracted": {
+              "price": "813.90"
+            }
+          },
+          {
+            "product_id": "HT-8002",
+            "fields": [
+              "price"
+            ],
+            "extracted": {
+              "price": "1208.90"
+            }
+          },
+          {
+            "product_id": "HT-8003",
+            "fields": [
+              "price"
+            ],
+            "extracted": {
+              "price": "1397.90"
+            }
+          }
+        ],
+        "missing_ids": [],
+        "unexpected_ids": [],
+        "duplicated_ids": []
+      }
+    },
+    {
+      "scenario": "sap_1.96.0",
+      "app_version": "OpenUI5 1.96.0",
+      "category": "Laptops",
+      "expected_behaviour": "export every product with its exact price",
+      "runtime_validator": {
+        "status": "needs_review",
+        "record_issues": [],
+        "batch_issues": [
+          {
+            "kind": "navigation",
+            "detail": "timeout waiting for {'css': '#container-cart---homeView--categoryList ul[role=list]'}",
+            "scope": "batch"
+          }
+        ]
+      },
+      "known_good_check": {
+        "note": "comparison with reference records kept by the bench; reference values are withheld",
+        "records_expected": 11,
+        "records_exported": 0,
+        "exported_but_wrong": [],
+        "missing_ids": [
+          "HT-1000",
+          "HT-1001",
+          "HT-1002",
+          "HT-1003",
+          "HT-1011",
+          "HT-1251",
+          "HT-1253",
+          "HT-8000",
+          "HT-8001",
+          "HT-8002",
+          "HT-8003"
+        ],
+        "unexpected_ids": [],
+        "duplicated_ids": []
+      }
+    }
+  ]
+}
+```
+
+RULE FORMAT  (format id "ui5-rule-repair/rule@1"; plain JSON, no code of any kind)
+
+{
+  "format": "ui5-rule-repair/rule@1",
+  "name": string,
+  "parameters": {"category": "<visible category name>"},   // "{category}" in any string is replaced
+  "steps": [ STEP, ... ],          // run in order after the app has loaded
+  "items": {
+    "locator": LOCATOR,            // matches every record element of the list; all matches are used
+    "open": true | false,          // true: click each item to open its detail view before reading
+    "detail_ready": LOCATOR | null // after opening, wait until this matches
+  },
+  "fields": { "<field name>": FIELD, ... },
+  "key": "<field name>",           // the field that identifies a record (must be unique)
+  "count_check": true | false      // compare the number of items with the number read by a read_count step
+}
+
+STEP is one of:
+  {"action": "wait_for",   "target": LOCATOR}
+  {"action": "click",      "target": LOCATOR, "then_wait_for": LOCATOR | null}
+  {"action": "read_count", "target": LOCATOR, "regex": "<regex, group 1 = the number>"}
+
+LOCATOR (exactly one of css / text / role / label, plus optional keys):
+  {"css": "<CSS selector>"}
+  {"text": "<exact visible text>"}                       // the deepest element whose whole text equals it
+  {"role": "<ARIA role>", "name": "<accessible name>"}   // name optional
+  {"label": "<visible label text>"}                      // the value shown next to that label
+  optional: "within": LOCATOR    // search only inside the element matched by this locator
+            "has_text": "<text>" // keep only elements one of whose text lines equals this
+            "pick": "single" | "first"
+                 // single (default): more than one match is reported as ambiguous and nothing is read
+                 // first: the first match in document order is read, other matches are ignored
+  Only visible elements match.  Ids that contain "__" are generated at runtime and are refused.
+
+FIELD:
+  {
+    "from": "item" | "detail" | "url",   // item: inside the list element; detail: the page after opening; url: the page URL
+    "locator": LOCATOR,                  // not used when from = "url"
+    "regex": "<optional regex; group 1 (or the whole match) is the value>",   // required when from = "url"
+    "type": "id" | "decimal" | "currency_code" | "enum" | "text",
+    "number_format": {"decimal": ",", "group": "."},  // decimal only
+    "map": {"<shown text>": "<code>", ...},           // enum only: shown value -> output code
+    "pattern": "<regex the value must fully match>",  // id only, optional
+    "anchor": {"text": "<label text>", "max_hops": 3}  // optional contract: that text must be visible
+                                                       // within max_hops ancestors of the matched element
+  }
+
+Runtime contracts checked by the validator (it only sees the page, never any reference data):
+  missing field, ambiguous match (pick=single), value of the wrong type or outside the enum map,
+  failed anchor, item count different from the on-screen count, duplicate keys.
+  A record with any issue is not exported: it goes to review, with no value invented.
+
+
+OBSERVATIONS of the modified versions where the rule failed
+=== app version: OpenUI5 1.154.0, modified copy 'delivered_price' ===
+--- step: app loaded  (URL fragment: #)
+div#container-cart---homeView.sapUiView.sapUiXMLView.sapMNavItem
+  div#container-cart---homeView--page.sapMPage.sapMPageBgSolid.sapMPageWithHeader.sapMPageWithSubHeader.sapMPageBusyCoversAll [role=region] [aria-label="Product Catalog Search and Navigation"]
+    div.sapMPageHeader [role=region] [aria-label="Home Header"]
+      div#container-cart---homeView--page-intHeader.sapMIBar.sapMIBar-CTX.sapMBar.sapMContent-CTX.sapMBar-CTX.sapMPageHeader
+        div#container-cart---homeView--page-intHeader-BarRight.sapMBarRight.sapMBarContainer
+    div.sapMPageSubHeader [role=search] [aria-label="Products"]
+      div#container-cart---homeView--searchBar33343.sapMIBar.sapMTBInactive.sapMTB.sapMTBNewFlex.sapMTBStandard.sapMTB-Auto-CTX
+        div#container-cart---homeView--searchField.sapMSF.sapMBarChild.sapMBarChildFirstChild.sapMTBShrinkItem.sapMFocus
+          form#container-cart---homeView--searchField-F.sapMSFF
+            input#container-cart---homeView--searchField-I.sapMSFI [aria-label="Search"]
+            div#container-cart---homeView--searchField-search.sapMSFS.sapMSFB
+    section#container-cart---homeView--page-cont.sapMPageEnableScrolling.sapUiScrollDelegate [role=navigation] [aria-label="List Of Categories"]
+      div#container-cart---homeView--categoryList.sapMList.sapMListBGSolid
+        div#container-cart---homeView--categoryList-header.sapMListHdr.sapMListHdrText [role=heading] "Categories"
+        ul#container-cart---homeView--categoryList-listUl.sapMListItems.sapMListUl.sapMListShowSeparatorsAll.sapMListModeNone [role=list]
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Accessories"
+            div.sapMLIBCounter [aria-label="Counter 34"] "34"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Computer System Accessories"
+            div.sapMLIBCounter [aria-label="Counter 7"] "7"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Desktop Computers"
+            div.sapMLIBCounter [aria-label="Counter 5"] "5"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Flat Screen TVs"
+            div.sapMLIBCounter [aria-label="Counter 3"] "3"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Flat Screens"
+            div.sapMLIBCounter [aria-label="Counter 3"] "3"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Graphics Card"
+            div.sapMLIBCounter [aria-label="Counter 4"] "4"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Keyboards"
+            div.sapMLIBCounter [aria-label="Counter 4"] "4"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Laptops"
+            div.sapMLIBCounter [aria-label="Counter 11"] "11"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Mice"
+            div.sapMLIBCounter [aria-label="Counter 7"] "7"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Printers"
+            div.sapMLIBCounter [aria-label="Counter 9"] "9"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Scanners"
+            div.sapMLIBCounter [aria-label="Counter 4"] "4"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Servers"
+            div.sapMLIBCounter [aria-label="Counter 3"] "3"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Smartphones and Tablets"
+            div.sapMLIBCounter [aria-label="Counter 9"] "9"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Software"
+            div.sapMLIBCounter [aria-label="Counter 8"] "8"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Speakers"
+            div.sapMLIBCounter [aria-label="Counter 3"] "3"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Telecommunication"
+            div.sapMLIBCounter [aria-label="Counter 3"] "3"
+--- step: clicked the visible text 'Laptops'  (URL fragment: #/category/LT)
+div#container-cart---category.sapUiView.sapUiXMLView.sapMNavItem
+  div#container-cart---category--page.sapMPage.sapMPageBgSolid.sapMPageWithHeader.sapMPageBusyCoversAll [role=region] [aria-label="Category"]
+    div.sapMPageHeader [role=region] [aria-label="Category Header"]
+      div#container-cart---category--page-intHeader.sapMIBar.sapMIBar-CTX.sapMBar.sapMContent-CTX.sapMBar-CTX.sapMPageHeader [role=toolbar]
+        div#container-cart---category--page-intHeader-BarLeft.sapMBarLeft.sapMBarContainer
+          button#container-cart---category--page-navButton.sapMBtnBase.sapMBtn.sapMBarChild [aria-label="Back"]
+            span#container-cart---category--page-navButton-inner.sapMBtnInner.sapMBtnHoverable.sapMFocusable.sapMBtnBack.sapMBtnIconFirst
+              span#container-cart---category--page-navButton-iconBtn.sapUiIcon.sapUiIconMirrorInRTL.sapMBtnIcon.sapMBtnIconLeft [role=presentation]
+        div#container-cart---category--page-intHeader-BarRight.sapMBarRight.sapMBarContainer
+          button#container-cart---category--masterListFilterButton.sapMBtnBase.sapMBtn.sapMBarChild [aria-label="Filter"]
+            span#container-cart---category--masterListFilterButton-inner.sapMBtnInner.sapMBtnHoverable.sapMFocusable.sapMBtnIconFirst.sapMBtnDefault
+              span#container-cart---category--masterListFilterButton-img.sapUiIcon.sapUiIconMirrorInRTL.sapMBtnCustomIcon.sapMBtnIcon.sapMBtnIconLeft [role=presentation]
+    section#container-cart---category--page-cont.sapMPageEnableScrolling.sapUiScrollDelegate [role=main] [aria-label="Laptops Items of Category"]
+      div#container-cart---category--productList.sapMList.sapMListBGSolid
+        ul#container-cart---category--productList-listUl.sapMListItems.sapMListUl.sapMListShowSeparatorsAll.sapMListModeSingleSelectMaster [role=list]
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "1.003,90"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp.sapUiSelectable "Astro Laptop 1516"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "incl. 14,90 EUR shipping"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess
+                      span.sapMObjStatusWrapper
+                        span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Ultrasonic United"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly
+                      span.sapMObjectAttributeText [role=link] [aria-label="Compare"]
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "990,90"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp.sapUiSelectable "Benda Laptop 1408"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "incl. 14,90 EUR shipping"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess
+                      span.sapMObjStatusWrapper
+                        span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Ultrasonic United"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly
+                      span.sapMObjectAttributeText [role=link] [aria-label="Compare"]
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "813,90"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp.sapUiSelectable "ITelO FlexTop I4000"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "incl. 14,90 EUR shipping"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess
+                      span.sapMObjStatusWrapper
+                        span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Titanium"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly
+                      span.sapMObjectAttributeText [role=link] [aria-label="Compare"]
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "813,90"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp.sapUiSelectable "ITelO FlexTop I6300c"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "incl. 14,90 EUR shipping"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess
+                      span.sapMObjStatusWrapper
+                        span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Titanium"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly
+                      span.sapMObjectAttributeText [role=link] [aria-label="Compare"]
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "1.208,90"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp.sapUiSelectable "ITelO FlexTop I9100"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "incl. 9,90 EUR shipping"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess
+                      span.sapMObjStatusWrapper
+                        span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Titanium"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly
+                      span.sapMObjectAttributeText [role=link] [aria-label="Compare"]
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "1.397,90"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp.sapUiSelectable "ITelO FlexTop I9800"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "incl. 9,90 EUR shipping"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess
+                      span.sapMObjStatusWrapper
+                        span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Titanium"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly
+                      span.sapMObjectAttributeText [role=link] [aria-label="Compare"]
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "970,90"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp.sapUiSelectable "Notebook Basic 15"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "incl. 14,90 EUR shipping"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess
+                      span.sapMObjStatusWrapper
+                        span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Very Best Screens"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly
+                      span.sapMObjectAttributeText [role=link] [aria-label="Compare"]
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "1.263,90"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp.sapUiSelectable "Notebook Basic 17"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "incl. 14,90 EUR shipping"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess
+                      span.sapMObjStatusWrapper
+                        span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Very Best Screens"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly
+                      span.sapMObjectAttributeText [role=link] [aria-label="Compare"]
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "1.584,90"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp.sapUiSelectable "Notebook Basic 18"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "incl. 14,90 EUR shipping"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess
+                      span.sapMObjStatusWrapper
+                        span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Very Best Screens"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly
+                      span.sapMObjectAttributeText [role=link] [aria-label="Compare"]
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "1.664,90"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp.sapUiSelectable "Notebook Basic 19"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "incl. 14,90 EUR shipping"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess
+                      span.sapMObjStatusWrapper
+                        span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Smartcards"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly
+                      span.sapMObjectAttributeText [role=link] [aria-label="Compare"]
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=listitem]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "2.313,90"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp.sapUiSelectable "Notebook Professional 17"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "incl. 14,90 EUR shipping"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusWarning
+                      span.sapMObjStatusWrapper
+                        span.sapMObjStatusText "Out of Stock"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Very Best Screens"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly
+                      span.sapMObjectAttributeText [role=link] [aria-label="Compare"]
+                        bdi "Compare"
+--- step: clicked list item 1 of the category list  (URL fragment: #/category/LT/product/HT-1251)
+div#container-cart---product.sapUiView.sapUiXMLView.sapMNavItem
+  div#container-cart---product--page.sapMPage.sapMPageBgSolid.sapMPageWithHeader.sapMPageWithFooter.sapMPageBusyCoversAll [role=region] [aria-label="Product Details"]
+    div.sapMPageHeader [role=region] [aria-label="Product Header"]
+      div.sapMIBar.sapMIBar-CTX.sapMBar.sapMContent-CTX.sapMBar-CTX.sapMPageHeader [role=toolbar]
+        div.sapMBarLeft.sapMBarContainer
+        div.sapMBarRight.sapMBarContainer
+          button.sapMBtnBase.sapMBtn.sapMBarChild [aria-label="Login"]
+            span.sapMBtnInner.sapMBtnHoverable.sapMFocusable.sapMBtnIconFirst.sapMBtnDefault
+              span.sapUiIcon.sapUiIconMirrorInRTL.sapMBtnCustomIcon.sapMBtnIcon.sapMBtnIconLeft [role=presentation]
+          button.sapMBtnBase.sapMBtn.sapMBarChild [aria-label="Show Shopping Cart"]
+            span.sapMBtnInner.sapMBtnHoverable.sapMFocusable.sapMBtnIconFirst.sapMBtnDefault
+              span.sapUiIcon.sapUiIconMirrorInRTL.sapMBtnCustomIcon.sapMBtnIcon.sapMBtnIconLeft [role=presentation]
+    section#container-cart---product--page-cont.sapMPageEnableScrolling.sapUiScrollDelegate [role=main] [aria-label="Product Description"]
+      div.sapMOH.sapMOHBgTransparent [role=region]
+        div.sapMOHTopRow
+          div.sapMOHTitleDiv
+            div.sapMOHTitle
+              span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth
+                span.sapMTextMaxLine.sapMTextLineClamp.sapUiSelectable "Astro Laptop 1516"
+          div.sapMOHNumberDiv
+            div.sapMObjectNumber.sapMObjectNumberStatusNone
+              span.sapMObjectNumberInner
+                span.sapMObjectNumberText "989,00"
+                span.sapMObjectNumberUnit "EUR"
+        div.sapMOHBottomRow
+          div.sapMOHAttrRow
+            div.sapMOHAttr
+              div.sapMObjectAttributeDiv
+                span.sapMObjectAttributeTitle
+                  bdi "Shipping"
+                span.sapMObjectAttributeColon ":"
+                span.sapMObjectAttributeText
+                  bdi "14,90 EUR"
+            div.sapMOHStatus
+              div.sapMObjStatus.sapMObjStatusSuccess
+                span.sapMObjStatusWrapper
+                  span.sapMObjStatusText "Available"
+          div.sapMOHAttrRow
+            div.sapMOHAttr
+              div.sapMObjectAttributeDiv
+                span.sapMObjectAttributeTitle
+                  bdi "Supplier"
+                span.sapMObjectAttributeColon ":"
+                span.sapMObjectAttributeText
+                  bdi "Ultrasonic United"
+          div.sapMOHAttrRow
+            div.sapMOHAttr
+              div.sapMObjectAttributeDiv
+                span.sapMObjectAttributeTitle
+                  bdi "Description"
+                span.sapMObjectAttributeColon ":"
+                span.sapMObjectAttributeText
+                  bdi "Flexible Laptop with 2,5 GHz Quad Core, 15" HD TN, 16 GB DDR SDRAM, 256 GB SSD, Windows 10"
+          div.sapMOHAttrRow
+            div.sapMOHAttr
+              div.sapMObjectAttributeDiv
+                span.sapMObjectAttributeTitle
+                  bdi "Weight"
+                span.sapMObjectAttributeColon ":"
+                span.sapMObjectAttributeText
+                  bdi "4.2 KG"
+          div.sapMOHAttrRow
+            div.sapMOHAttr
+              div.sapMObjectAttributeDiv
+                span.sapMObjectAttributeTitle
+                  bdi "Measures"
+                span.sapMObjectAttributeColon ":"
+                span.sapMObjectAttributeText
+                  bdi "30 , 18 , 3"
+      div.sapMFlexBox.sapMVBox.sapMFlexBoxJustifyStart.sapMFlexBoxAlignItemsCenter.sapMFlexBoxWrapNoWrap.sapMFlexBoxAlignContentStretch
+        div.sapMFlexItemAlignAuto.sapMFlexBoxBGTransparent.sapMFlexItem
+          span#container-cart---product--productImage.sapMLightBoxImage.sapUiSmallMargin
+            span.sapMLightBoxMagnifyingGlass
+    div.sapMPageFooter [role=region] [aria-label="Product Footer"]
+      div.sapMIBar.sapMTBInactive.sapMTB.sapMTBNewFlex.sapMTBStandard.sapMTB-Auto-CTX
+        div.sapMTBSpacer.sapMTBSpacerFlex.sapMBarChild.sapMBarChildFirstChild
+        button.sapMBtnBase.sapMBtn.sapMBtnInverted.sapMBarChild
+          span.sapMBtnInner.sapMBtnHoverable.sapMFocusable.sapMBtnText.sapMBtnEmphasized
+            span.sapMBtnContent
+              bdi "Add to Cart"
+--- step: clicked list item 2 of the category list  (URL fragment: #/category/LT/product/HT-1253)
+div#container-cart---product.sapUiView.sapUiXMLView.sapMNavItem
+  div#container-cart---product--page.sapMPage.sapMPageBgSolid.sapMPageWithHeader.sapMPageWithFooter.sapMPageBusyCoversAll [role=region] [aria-label="Product Details"]
+    div.sapMPageHeader [role=region] [aria-label="Product Header"]
+      div.sapMIBar.sapMIBar-CTX.sapMBar.sapMContent-CTX.sapMBar-CTX.sapMPageHeader [role=toolbar]
+        div.sapMBarLeft.sapMBarContainer
+        div.sapMBarRight.sapMBarContainer
+          button.sapMBtnBase.sapMBtn.sapMBarChild [aria-label="Login"]
+            span.sapMBtnInner.sapMBtnHoverable.sapMFocusable.sapMBtnIconFirst.sapMBtnDefault
+              span.sapUiIcon.sapUiIconMirrorInRTL.sapMBtnCustomIcon.sapMBtnIcon.sapMBtnIconLeft [role=presentation]
+          button.sapMBtnBase.sapMBtn.sapMBarChild [aria-label="Show Shopping Cart"]
+            span.sapMBtnInner.sapMBtnHoverable.sapMFocusable.sapMBtnIconFirst.sapMBtnDefault
+              span.sapUiIcon.sapUiIconMirrorInRTL.sapMBtnCustomIcon.sapMBtnIcon.sapMBtnIconLeft [role=presentation]
+    section#container-cart---product--page-cont.sapMPageEnableScrolling.sapUiScrollDelegate [role=main] [aria-label="Product Description"]
+      div.sapMOH.sapMOHBgTransparent [role=region]
+        div.sapMOHTopRow
+          div.sapMOHTitleDiv
+            div.sapMOHTitle
+              span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth
+                span.sapMTextMaxLine.sapMTextLineClamp.sapUiSelectable "Benda Laptop 1408"
+          div.sapMOHNumberDiv
+            div.sapMObjectNumber.sapMObjectNumberStatusNone
+              span.sapMObjectNumberInner
+                span.sapMObjectNumberText "976,00"
+                span.sapMObjectNumberUnit "EUR"
+        div.sapMOHBottomRow
+          div.sapMOHAttrRow
+            div.sapMOHAttr
+              div.sapMObjectAttributeDiv
+                span.sapMObjectAttributeTitle
+                  bdi "Shipping"
+                span.sapMObjectAttributeColon ":"
+                span.sapMObjectAttributeText
+                  bdi "14,90 EUR"
+            div.sapMOHStatus
+              div.sapMObjStatus.sapMObjStatusSuccess
+                span.sapMObjStatusWrapper
+                  span.sapMObjStatusText "Available"
+          div.sapMOHAttrRow
+            div.sapMOHAttr
+              div.sapMObjectAttributeDiv
+                span.sapMObjectAttributeTitle
+                  bdi "Supplier"
+                span.sapMObjectAttributeColon ":"
+                span.sapMObjectAttributeText
+                  bdi "Ultrasonic United"
+          div.sapMOHAttrRow
+            div.sapMOHAttr
+              div.sapMObjectAttributeDiv
+                span.sapMObjectAttributeTitle
+                  bdi "Description"
+                span.sapMObjectAttributeColon ":"
+                span.sapMObjectAttributeText
+                  bdi "Flexible Laptop with 2,5 GHz Dual Core, 14" HD+ TN, 8 GB DDR SDRAM, 324 GB SSD, Windows 10"
+          div.sapMOHAttrRow
+            div.sapMOHAttr
+              div.sapMObjectAttributeDiv
+                span.sapMObjectAttributeTitle
+                  bdi "Weight"
+                span.sapMObjectAttributeColon ":"
+                span.sapMObjectAttributeText
+                  bdi "4.2 KG"
+          div.sapMOHAttrRow
+            div.sapMOHAttr
+              div.sapMObjectAttributeDiv
+                span.sapMObjectAttributeTitle
+                  bdi "Measures"
+                span.sapMObjectAttributeColon ":"
+                span.sapMObjectAttributeText
+                  bdi "30 , 18 , 3"
+      div.sapMFlexBox.sapMVBox.sapMFlexBoxJustifyStart.sapMFlexBoxAlignItemsCenter.sapMFlexBoxWrapNoWrap.sapMFlexBoxAlignContentStretch
+        div.sapMFlexItemAlignAuto.sapMFlexBoxBGTransparent.sapMFlexItem
+          span#container-cart---product--productImage.sapMLightBoxImage.sapUiSmallMargin
+            span.sapMLightBoxMagnifyingGlass
+    div.sapMPageFooter [role=region] [aria-label="Product Footer"]
+      div.sapMIBar.sapMTBInactive.sapMTB.sapMTBNewFlex.sapMTBStandard.sapMTB-Auto-CTX
+        div.sapMTBSpacer.sapMTBSpacerFlex.sapMBarChild.sapMBarChildFirstChild
+        button.sapMBtnBase.sapMBtn.sapMBtnInverted.sapMBarChild
+          span.sapMBtnInner.sapMBtnHoverable.sapMFocusable.sapMBtnText.sapMBtnEmphasized
+            span.sapMBtnContent
+              bdi "Add to Cart"
+=== app version: OpenUI5 1.96.0 ===
+--- step: app loaded  (URL fragment: #)
+div#container-cart---homeView.sapUiView.sapUiXMLView.sapMNavItem
+  div#container-cart---homeView--page.sapMPage.sapMPageBgSolid.sapMPageWithHeader.sapMPageWithSubHeader.sapMPageBusyCoversAll [role=region] [aria-label="Product Catalog Search and Navigation"]
+    div.sapMPageHeader [role=region] [aria-label="Home Header"]
+      div#container-cart---homeView--page-intHeader.sapMIBar.sapMIBar-CTX.sapMBar.sapMContent-CTX.sapMBar-CTX.sapMPageHeader [role=toolbar]
+        div#container-cart---homeView--page-intHeader-BarLeft.sapMBarLeft.sapMBarContainer
+        div#container-cart---homeView--page-intHeader-BarRight.sapMBarRight.sapMBarContainer
+    div.sapMPageSubHeader [role=search] [aria-label="Products"]
+      div#container-cart---homeView--searchBar33343.sapMIBar.sapMTB.sapMTBNewFlex.sapMTBInactive.sapMTBStandard.sapMTB-Auto-CTX [role=toolbar]
+        div#container-cart---homeView--searchField.sapMSF.sapMBarChild.sapMTBShrinkItem
+          form#container-cart---homeView--searchField-F.sapMSFF
+            input#container-cart---homeView--searchField-I.sapMSFI
+            div#container-cart---homeView--searchField-search.sapMSFS.sapMSFB
+    section#container-cart---homeView--page-cont.sapMPageEnableScrolling.sapUiScrollDelegate [role=navigation] [aria-label="List Of Categories"]
+      div#container-cart---homeView--categoryList.sapMList.sapMListBGSolid
+        header#container-cart---homeView--categoryList-header.sapMListHdr.sapMListHdrText "Categories"
+        ul#container-cart---homeView--categoryList-listUl.sapMListItems.sapMListUl.sapMListShowSeparatorsAll.sapMListModeNone [role=listbox]
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Accessories"
+            div.sapMLIBCounter [aria-label="Counter 34"] "34"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Computer System Accessories"
+            div.sapMLIBCounter [aria-label="Counter 7"] "7"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Desktop Computers"
+            div.sapMLIBCounter [aria-label="Counter 5"] "5"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Flat Screen TVs"
+            div.sapMLIBCounter [aria-label="Counter 3"] "3"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Flat Screens"
+            div.sapMLIBCounter [aria-label="Counter 3"] "3"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Graphics Card"
+            div.sapMLIBCounter [aria-label="Counter 4"] "4"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Keyboards"
+            div.sapMLIBCounter [aria-label="Counter 4"] "4"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Laptops"
+            div.sapMLIBCounter [aria-label="Counter 11"] "11"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Mice"
+            div.sapMLIBCounter [aria-label="Counter 7"] "7"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Printers"
+            div.sapMLIBCounter [aria-label="Counter 9"] "9"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Scanners"
+            div.sapMLIBCounter [aria-label="Counter 4"] "4"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Servers"
+            div.sapMLIBCounter [aria-label="Counter 3"] "3"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Smartphones and Tablets"
+            div.sapMLIBCounter [aria-label="Counter 9"] "9"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Software"
+            div.sapMLIBCounter [aria-label="Counter 8"] "8"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Speakers"
+            div.sapMLIBCounter [aria-label="Counter 3"] "3"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeActive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMSLIDiv
+                div.sapMSLITitleOnly "Telecommunication"
+            div.sapMLIBCounter [aria-label="Counter 3"] "3"
+--- step: clicked the visible text 'Laptops'  (URL fragment: #/category/LT)
+div#container-cart---category.sapUiView.sapUiXMLView.sapMNavItem
+  div#container-cart---category--page.sapMPage.sapMPageBgSolid.sapMPageWithHeader.sapMPageBusyCoversAll [role=region] [aria-label="Category"]
+    div.sapMPageHeader [role=region] [aria-label="Category Header"]
+      div#container-cart---category--page-intHeader.sapMIBar.sapMIBar-CTX.sapMBar.sapMContent-CTX.sapMBar-CTX.sapMPageHeader [role=toolbar]
+        div#container-cart---category--page-intHeader-BarLeft.sapMBarLeft.sapMBarContainer
+          button#container-cart---category--page-navButton.sapMBtnBase.sapMBtn.sapMBtnBack.sapMBarChild [aria-label="Back"]
+            span#container-cart---category--page-navButton-inner.sapMBtnInner.sapMBtnHoverable.sapMFocusable.sapMBtnBack.sapMBtnIconFirst
+              span#container-cart---category--page-navButton-iconBtn.sapUiIcon.sapUiIconMirrorInRTL.sapMBtnIcon.sapMBtnIconLeft [role=presentation]
+        div#container-cart---category--page-intHeader-BarRight.sapMBarRight.sapMBarContainer
+          button#container-cart---category--masterListFilterButton.sapMBtnBase.sapMBtn.sapMBarChild [aria-label="Filter"]
+            span#container-cart---category--masterListFilterButton-inner.sapMBtnInner.sapMBtnHoverable.sapMFocusable.sapMBtnIconFirst.sapMBtnDefault
+              span#container-cart---category--masterListFilterButton-img.sapUiIcon.sapUiIconMirrorInRTL.sapMBtnCustomIcon.sapMBtnIcon.sapMBtnIconLeft [role=presentation]
+    section#container-cart---category--page-cont.sapMPageEnableScrolling.sapUiScrollDelegate [role=main] [aria-label="Laptops Items of Category"]
+      div#container-cart---category--productList.sapMList.sapMListBGSolid
+        ul#container-cart---category--productList-listUl.sapMListItems.sapMListUl.sapMListShowSeparatorsAll.sapMListModeSingleSelectMaster [role=listbox]
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph [role=group]
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "989,00"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp "Astro Laptop 1516"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Ultrasonic United"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess [role=group]
+                      span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly [role=link]
+                      span.sapMObjectAttributeText
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph [role=group]
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "976,00"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp "Benda Laptop 1408"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Ultrasonic United"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess [role=group]
+                      span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly [role=link]
+                      span.sapMObjectAttributeText
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph [role=group]
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "799,00"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp "ITelO FlexTop I4000"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Titanium"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess [role=group]
+                      span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly [role=link]
+                      span.sapMObjectAttributeText
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph [role=group]
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "799,00"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp "ITelO FlexTop I6300c"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Titanium"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess [role=group]
+                      span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly [role=link]
+                      span.sapMObjectAttributeText
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph [role=group]
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "1.199,00"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp "ITelO FlexTop I9100"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Titanium"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess [role=group]
+                      span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly [role=link]
+                      span.sapMObjectAttributeText
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph [role=group]
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "1.388,00"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp "ITelO FlexTop I9800"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Titanium"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess [role=group]
+                      span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly [role=link]
+                      span.sapMObjectAttributeText
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph [role=group]
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "956,00"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp "Notebook Basic 15"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Very Best Screens"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess [role=group]
+                      span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly [role=link]
+                      span.sapMObjectAttributeText
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph [role=group]
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "1.249,00"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp "Notebook Basic 17"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Very Best Screens"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess [role=group]
+                      span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly [role=link]
+                      span.sapMObjectAttributeText
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph [role=group]
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "1.570,00"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp "Notebook Basic 18"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Very Best Screens"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess [role=group]
+                      span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly [role=link]
+                      span.sapMObjectAttributeText
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph [role=group]
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "1.650,00"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp "Notebook Basic 19"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Smartcards"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusSuccess [role=group]
+                      span.sapMObjStatusText "Available"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly [role=link]
+                      span.sapMObjectAttributeText
+                        bdi "Compare"
+          li.sapMLIB.sapMLIB-CTX.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMLIBActionable.sapMLIBHoverable [role=option]
+            div.sapMLIBContent
+              div.sapMObjLTopRow
+                div.sapMObjLIconDiv
+                div.sapMObjLNumberDiv
+                  div.sapMObjectNumber.sapMObjectNumberStatusNone.sapMObjectNumberEmph [role=group]
+                    span.sapMObjectNumberInner
+                      span.sapMObjectNumberText "2.299,00"
+                      span.sapMObjectNumberUnit "EUR"
+                span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth.sapMObjLTitle
+                  span.sapMTextMaxLine.sapMTextLineClamp "Notebook Professional 17"
+              div.sapMObjLBottomRow
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv
+                      span.sapMText.sapUiSelectable.sapMTextNoWrap.sapMTextMaxWidth "Very Best Screens"
+                  div.sapMObjLStatusDiv
+                    div.sapMObjStatus.sapMObjStatusWarning [role=group]
+                      span.sapMObjStatusText "Out of Stock"
+                div.sapMObjLAttrRow
+                  div.sapMObjLAttrDiv
+                    div.sapMObjectAttributeDiv.sapMObjectAttributeActive.sapMObjectAttributeTextOnly [role=link]
+                      span.sapMObjectAttributeText
+                        bdi "Compare"
+--- step: clicked list item 1 of the category list  (URL fragment: #/category/LT/product/HT-1251)
+div#container-cart---product.sapUiView.sapUiXMLView.sapMNavItem
+  div#container-cart---product--page.sapMPage.sapMPageBgSolid.sapMPageWithHeader.sapMPageWithFooter.sapMPageBusyCoversAll [role=region] [aria-label="Product Details"]
+    div.sapMPageHeader [role=region] [aria-label="Product Header"]
+      div.sapMIBar.sapMIBar-CTX.sapMBar.sapMContent-CTX.sapMBar-CTX.sapMPageHeader [role=toolbar]
+        div.sapMBarLeft.sapMBarContainer
+        div.sapMBarRight.sapMBarContainer
+          button.sapMBtnBase.sapMBtn.sapMBarChild [aria-label="Login"]
+            span.sapMBtnInner.sapMBtnHoverable.sapMFocusable.sapMBtnIconFirst.sapMBtnDefault
+              span.sapUiIcon.sapUiIconMirrorInRTL.sapMBtnCustomIcon.sapMBtnIcon.sapMBtnIconLeft [role=presentation]
+          button.sapMBtnBase.sapMBtn.sapMBarChild [aria-label="Show Shopping Cart"]
+            span.sapMBtnInner.sapMBtnHoverable.sapMFocusable.sapMBtnIconFirst.sapMBtnDefault
+              span.sapUiIcon.sapUiIconMirrorInRTL.sapMBtnCustomIcon.sapMBtnIcon.sapMBtnIconLeft [role=presentation]
+    section#container-cart---product--page-cont.sapMPageEnableScrolling.sapUiScrollDelegate [role=main] [aria-label="Product Description"]
+      div.sapMOH.sapMOHBgTransparent [role=region]
+        div.sapMOHTopRow
+          div.sapMOHTitleDiv
+            div.sapMOHTitle
+              span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth
+                span.sapMTextMaxLine.sapMTextLineClamp "Astro Laptop 1516"
+          div.sapMOHNumberDiv
+            div.sapMObjectNumber.sapMObjectNumberStatusNone [role=group]
+              span.sapMObjectNumberInner
+                span.sapMObjectNumberText "989,00"
+                span.sapMObjectNumberUnit "EUR"
+        div.sapMOHBottomRow
+          div.sapMOHAttrRow
+            div.sapMOHAttr
+              div.sapMObjectAttributeDiv
+                span.sapMObjectAttributeTitle
+                  bdi "Supplier"
+                span.sapMObjectAttributeColon ":"
+                span.sapMObjectAttributeText
+                  bdi "Ultrasonic United"
+            div.sapMOHStatus
+              div.sapMObjStatus.sapMObjStatusSuccess [role=group]
+                span.sapMObjStatusText "Available"
+          div.sapMOHAttrRow
+            div.sapMOHAttr
+              div.sapMObjectAttributeDiv
+                span.sapMObjectAttributeTitle
+                  bdi "Description"
+                span.sapMObjectAttributeColon ":"
+                span.sapMObjectAttributeText
+                  bdi "Flexible Laptop with 2,5 GHz Quad Core, 15" HD TN, 16 GB DDR SDRAM, 256 GB SSD, Windows 10"
+          div.sapMOHAttrRow
+            div.sapMOHAttr
+              div.sapMObjectAttributeDiv
+                span.sapMObjectAttributeTitle
+                  bdi "Weight"
+                span.sapMObjectAttributeColon ":"
+                span.sapMObjectAttributeText
+                  bdi "4.2 KG"
+          div.sapMOHAttrRow
+            div.sapMOHAttr
+              div.sapMObjectAttributeDiv
+                span.sapMObjectAttributeTitle
+                  bdi "Measures"
+                span.sapMObjectAttributeColon ":"
+                span.sapMObjectAttributeText
+                  bdi "30 cm, 18 cm, 3 cm"
+      div.sapMFlexBox.sapMVBox.sapMFlexBoxJustifyStart.sapMFlexBoxAlignItemsCenter.sapMFlexBoxWrapNoWrap.sapMFlexBoxAlignContentStretch
+        div.sapMFlexItemAlignAuto.sapMFlexBoxBGTransparent.sapMFlexItem
+          span#container-cart---product--productImage.sapMLightBoxImage.sapUiSmallMargin
+            span.sapMLightBoxMagnifyingGlass
+    div.sapMPageFooter [role=region] [aria-label="Product Footer"]
+      div.sapMIBar.sapMTB.sapMTBNewFlex.sapMTBInactive.sapMTBStandard.sapMTB-Auto-CTX [role=toolbar]
+        div.sapMTBSpacer.sapMTBSpacerFlex.sapMBarChild
+        button.sapMBtnBase.sapMBtn.sapMBtnInverted.sapMBarChild
+          span.sapMBtnInner.sapMBtnHoverable.sapMFocusable.sapMBtnText.sapMBtnEmphasized
+            span.sapMBtnContent
+              bdi "Add to Cart"
+--- step: clicked list item 2 of the category list  (URL fragment: #/category/LT/product/HT-1253)
+div#container-cart---product.sapUiView.sapUiXMLView.sapMNavItem
+  div#container-cart---product--page.sapMPage.sapMPageBgSolid.sapMPageWithHeader.sapMPageWithFooter.sapMPageBusyCoversAll [role=region] [aria-label="Product Details"]
+    div.sapMPageHeader [role=region] [aria-label="Product Header"]
+      div.sapMIBar.sapMIBar-CTX.sapMBar.sapMContent-CTX.sapMBar-CTX.sapMPageHeader [role=toolbar]
+        div.sapMBarLeft.sapMBarContainer
+        div.sapMBarRight.sapMBarContainer
+          button.sapMBtnBase.sapMBtn.sapMBarChild [aria-label="Login"]
+            span.sapMBtnInner.sapMBtnHoverable.sapMFocusable.sapMBtnIconFirst.sapMBtnDefault
+              span.sapUiIcon.sapUiIconMirrorInRTL.sapMBtnCustomIcon.sapMBtnIcon.sapMBtnIconLeft [role=presentation]
+          button.sapMBtnBase.sapMBtn.sapMBarChild [aria-label="Show Shopping Cart"]
+            span.sapMBtnInner.sapMBtnHoverable.sapMFocusable.sapMBtnIconFirst.sapMBtnDefault
+              span.sapUiIcon.sapUiIconMirrorInRTL.sapMBtnCustomIcon.sapMBtnIcon.sapMBtnIconLeft [role=presentation]
+    section#container-cart---product--page-cont.sapMPageEnableScrolling.sapUiScrollDelegate [role=main] [aria-label="Product Description"]
+      div.sapMOH.sapMOHBgTransparent [role=region]
+        div.sapMOHTopRow
+          div.sapMOHTitleDiv
+            div.sapMOHTitle
+              span.sapMText.sapUiSelectable.sapMTextMaxLineWrapper.sapMTextMaxWidth
+                span.sapMTextMaxLine.sapMTextLineClamp "Benda Laptop 1408"
+          div.sapMOHNumberDiv
+            div.sapMObjectNumber.sapMObjectNumberStatusNone [role=group]
+              span.sapMObjectNumberInner
+                span.sapMObjectNumberText "976,00"
+                span.sapMObjectNumberUnit "EUR"
+        div.sapMOHBottomRow
+          div.sapMOHAttrRow
+            div.sapMOHAttr
+              div.sapMObjectAttributeDiv
+                span.sapMObjectAttributeTitle
+                  bdi "Supplier"
+                span.sapMObjectAttributeColon ":"
+                span.sapMObjectAttributeText
+                  bdi "Ultrasonic United"
+            div.sapMOHStatus
+              div.sapMObjStatus.sapMObjStatusSuccess [role=group]
+                span.sapMObjStatusText "Available"
+          div.sapMOHAttrRow
+            div.sapMOHAttr
+              div.sapMObjectAttributeDiv
+                span.sapMObjectAttributeTitle
+                  bdi "Description"
+                span.sapMObjectAttributeColon ":"
+                span.sapMObjectAttributeText
+                  bdi "Flexible Laptop with 2,5 GHz Dual Core, 14" HD+ TN, 8 GB DDR SDRAM, 324 GB SSD, Windows 10"
+          div.sapMOHAttrRow
+            div.sapMOHAttr
+              div.sapMObjectAttributeDiv
+                span.sapMObjectAttributeTitle
+                  bdi "Weight"
+                span.sapMObjectAttributeColon ":"
+                span.sapMObjectAttributeText
+                  bdi "4.2 KG"
+          div.sapMOHAttrRow
+            div.sapMOHAttr
+              div.sapMObjectAttributeDiv
+                span.sapMObjectAttributeTitle
+                  bdi "Measures"
+                span.sapMObjectAttributeColon ":"
+                span.sapMObjectAttributeText
+                  bdi "30 cm, 18 cm, 3 cm"
+      div.sapMFlexBox.sapMVBox.sapMFlexBoxJustifyStart.sapMFlexBoxAlignItemsCenter.sapMFlexBoxWrapNoWrap.sapMFlexBoxAlignContentStretch
+        div.sapMFlexItemAlignAuto.sapMFlexBoxBGTransparent.sapMFlexItem
+          span#container-cart---product--productImage.sapMLightBoxImage.sapUiSmallMargin
+            span.sapMLightBoxMagnifyingGlass
+    div.sapMPageFooter [role=region] [aria-label="Product Footer"]
+      div.sapMIBar.sapMTB.sapMTBNewFlex.sapMTBInactive.sapMTBStandard.sapMTB-Auto-CTX [role=toolbar]
+        div.sapMTBSpacer.sapMTBSpacerFlex.sapMBarChild
+        button.sapMBtnBase.sapMBtn.sapMBtnInverted.sapMBarChild
+          span.sapMBtnInner.sapMBtnHoverable.sapMFocusable.sapMBtnText.sapMBtnEmphasized
+            span.sapMBtnContent
+              bdi "Add to Cart"
+
+Write the corrected rule.

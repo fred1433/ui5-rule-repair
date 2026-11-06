@@ -1,0 +1,163 @@
+{
+ "rule_sha256": "c924540a126d6e896ca705d90333d69ad12af445f5e5a772cbb94dbc6050924d",
+ "failing_scenarios": [
+  {
+   "scenario": "delivered_price",
+   "app_version": "OpenUI5 1.154.0, modified copy 'delivered_price'",
+   "category": "Laptops",
+   "expected_behaviour": "export every product with its exact price",
+   "runtime_validator": {
+    "status": "pass",
+    "record_issues": [],
+    "batch_issues": []
+   },
+   "known_good_check": {
+    "note": "comparison with reference records kept by the bench; reference values are withheld",
+    "records_expected": 11,
+    "records_exported": 11,
+    "exported_but_wrong": [
+     {
+      "product_id": "HT-1000",
+      "fields": [
+       "price"
+      ],
+      "extracted": {
+       "price": "970.90"
+      }
+     },
+     {
+      "product_id": "HT-1001",
+      "fields": [
+       "price"
+      ],
+      "extracted": {
+       "price": "1263.90"
+      }
+     },
+     {
+      "product_id": "HT-1002",
+      "fields": [
+       "price"
+      ],
+      "extracted": {
+       "price": "1584.90"
+      }
+     },
+     {
+      "product_id": "HT-1003",
+      "fields": [
+       "price"
+      ],
+      "extracted": {
+       "price": "1664.90"
+      }
+     },
+     {
+      "product_id": "HT-1011",
+      "fields": [
+       "price"
+      ],
+      "extracted": {
+       "price": "2313.90"
+      }
+     },
+     {
+      "product_id": "HT-1251",
+      "fields": [
+       "price"
+      ],
+      "extracted": {
+       "price": "1003.90"
+      }
+     },
+     {
+      "product_id": "HT-1253",
+      "fields": [
+       "price"
+      ],
+      "extracted": {
+       "price": "990.90"
+      }
+     },
+     {
+      "product_id": "HT-8000",
+      "fields": [
+       "price"
+      ],
+      "extracted": {
+       "price": "813.90"
+      }
+     },
+     {
+      "product_id": "HT-8001",
+      "fields": [
+       "price"
+      ],
+      "extracted": {
+       "price": "813.90"
+      }
+     },
+     {
+      "product_id": "HT-8002",
+      "fields": [
+       "price"
+      ],
+      "extracted": {
+       "price": "1208.90"
+      }
+     },
+     {
+      "product_id": "HT-8003",
+      "fields": [
+       "price"
+      ],
+      "extracted": {
+       "price": "1397.90"
+      }
+     }
+    ],
+    "missing_ids": [],
+    "unexpected_ids": [],
+    "duplicated_ids": []
+   }
+  },
+  {
+   "scenario": "sap_1.96.0",
+   "app_version": "OpenUI5 1.96.0",
+   "category": "Laptops",
+   "expected_behaviour": "export every product with its exact price",
+   "runtime_validator": {
+    "status": "needs_review",
+    "record_issues": [],
+    "batch_issues": [
+     {
+      "kind": "navigation",
+      "detail": "timeout waiting for {'css': '#container-cart---homeView--categoryList ul[role=list]'}",
+      "scope": "batch"
+     }
+    ]
+   },
+   "known_good_check": {
+    "note": "comparison with reference records kept by the bench; reference values are withheld",
+    "records_expected": 11,
+    "records_exported": 0,
+    "exported_but_wrong": [],
+    "missing_ids": [
+     "HT-1000",
+     "HT-1001",
+     "HT-1002",
+     "HT-1003",
+     "HT-1011",
+     "HT-1251",
+     "HT-1253",
+     "HT-8000",
+     "HT-8001",
+     "HT-8002",
+     "HT-8003"
+    ],
+    "unexpected_ids": [],
+    "duplicated_ids": []
+   }
+  }
+ ]
+}

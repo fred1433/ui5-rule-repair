@@ -1,0 +1,15 @@
+{
+  "kind": "repair",
+  "created_utc": "2026-11-06T13:51:30Z",
+  "made_with": "claude -p (Claude subscription, all tools disabled, empty working folder)",
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "duration_ms": 13618,
+  "input_file": "failure_report.json",
+  "input_sha256": "d313e95644b858e03bdf9ffae28b04d26e74b2567e034c69647b2eaa2df021ae",
+  "prompt_sha256": "9fa3a5bfc780ee0859cbd204a31b3374cb2b426e73e742292450288e784fb020",
+  "parent_rule_sha256": "c924540a126d6e896ca705d90333d69ad12af445f5e5a772cbb94dbc6050924d",
+  "rule_sha256": "b729c34de01ee9560a5ed62f13188d6f10c92c0988f153ee1f04921dc7a4b129",
+  "static_check_errors": []
+}

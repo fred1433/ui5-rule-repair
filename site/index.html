@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>A generated scraping rule, checked against SAP's data</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EDF0F3; --sheet:#FFFFFF; --ink:#16202A; --graphite:#55616C; --hair:#D3DAE0;
+  --wrong:#B42318; --wrong-wash:#FCEBE9; --right:#0F6B45; --right-wash:#E5F3EB; --held:#7A5B12; --held-wash:#FBF3DE;
+  --sans:"Archivo",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{background:var(--paper)}
+body{margin:0;color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;font-stretch:100%}
+a{color:var(--ink);text-decoration-thickness:1px;text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:3px solid #2F6FEB;outline-offset:3px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 32px}
+.strip{display:flex;justify-content:space-between;gap:16px;padding:22px 0 0;font-size:14px;color:var(--graphite)}
+.strip a{color:var(--graphite)}
+h1{font-stretch:118%;font-weight:760;font-size:clamp(2.1rem,4.2vw,3.35rem);line-height:1.04;letter-spacing:-.015em;margin:40px 0 18px;max-width:21ch}
+.lede{font-size:1.15rem;line-height:1.5;max-width:66ch;margin:0 0 30px;color:#25313C}
+.lede strong{font-weight:650}
+
+/* the exhibit */
+.exhibit{background:var(--sheet);border:1px solid var(--hair);border-radius:4px;padding:34px 34px 30px;position:relative}
+.ex-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:40px;align-items:start}
+.ex-grid.second{grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);margin-top:30px;padding-top:28px;border-top:1px dashed var(--hair)}
+.verdict{margin-top:26px!important}
+.caption{font-size:14px;color:var(--graphite);margin:10px 0 0;max-width:52ch}
+.caption b{color:var(--ink);font-weight:600}
+.copy-note{display:inline-block;font-size:13px;font-weight:600;color:var(--held);background:var(--held-wash);padding:3px 9px;border-radius:3px;margin:0 0 16px}
+.shot{position:relative;border:1px solid var(--hair);border-radius:3px;overflow:hidden;background:#F5F6F7}
+.shot img{display:block;width:100%;height:auto}
+.box{position:absolute;border:2.5px solid;border-radius:4px;pointer-events:none}
+.box.read{border-color:var(--wrong);box-shadow:0 0 0 4px rgba(180,35,24,.14)}
+.box.truth{border-color:var(--right);box-shadow:0 0 0 4px rgba(15,107,69,.14)}
+.shot.row{max-width:470px}
+.shot.hdr{}
+.flag{position:absolute;font-size:12.5px;font-weight:650;padding:2px 8px;border-radius:3px;white-space:nowrap;color:#fff}
+.flag.read{background:var(--wrong)}
+.flag.truth{background:var(--right)}
+
+.rec{border-left:3px solid var(--hair);padding:2px 0 2px 18px;margin:0 0 26px}
+.rec h2{font-size:15px;font-weight:650;margin:0 0 8px;letter-spacing:0}
+.rec pre{font-family:var(--mono);font-size:14px;line-height:1.6;margin:0;white-space:pre-wrap}
+.rec.bad{border-color:var(--wrong)}
+.rec.good{border-color:var(--right)}
+.hl-bad{background:var(--wrong-wash);color:var(--wrong);font-weight:500}
+.hl-good{background:var(--right-wash);color:var(--right);font-weight:500}
+.rec p{margin:8px 0 0;font-size:14.5px;color:var(--graphite)}
+.verdict{font-stretch:108%;font-size:1.5rem;line-height:1.25;font-weight:700;margin:4px 0 0}
+.verdict .n{color:var(--wrong)}
+.act{display:flex;gap:22px;align-items:center;flex-wrap:wrap;margin-top:30px;padding-top:24px;border-top:1px solid var(--hair)}
+button.replay{font:inherit;font-stretch:110%;font-weight:700;font-size:1.05rem;background:var(--ink);color:#fff;border:0;border-radius:4px;padding:13px 22px;cursor:pointer}
+button.replay:hover{background:#26333F}
+button.replay[aria-expanded=true]{background:var(--right)}
+.act p{margin:0;font-size:14px;color:var(--graphite);max-width:52ch}
+
+/* replay */
+#replay{margin-top:8px}
+#replay[hidden]{display:none}
+.round-h{font-size:14px;color:var(--graphite);margin:28px 0 6px}
+.steps{list-style:none;counter-reset:s;margin:0;padding:0}
+.step{counter-increment:s;position:relative;padding:18px 0 18px 54px;border-top:1px solid var(--hair)}
+.step::before{content:counter(s);position:absolute;left:0;top:16px;width:34px;height:34px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center;font-weight:700;font-stretch:110%}
+.step h3{font-size:1.15rem;font-stretch:110%;margin:4px 0 6px}
+.step p{margin:0 0 8px;max-width:70ch}
+.fails{margin:6px 0 10px;padding-left:20px}
+.fails li{margin:3px 0}
+.hash{font-size:14px;color:var(--graphite)}
+.hash code{font-family:var(--mono);font-size:12.5px;word-break:break-all;color:var(--ink)}
+pre.diff{font-family:var(--mono);font-size:13px;line-height:1.55;background:#F7F8FA;border:1px solid var(--hair);border-radius:3px;padding:12px 0;overflow-x:auto;margin:6px 0 0}
+pre.diff span{display:block;padding:0 14px;white-space:pre}
+.d-del{background:var(--wrong-wash);color:#8A1C12}
+.d-add{background:var(--right-wash);color:#0B5536}
+.d-ctx{color:#5E6A74}
+.d-gap{color:#9AA4AD}
+.anim .step{opacity:0;transform:translateY(6px);transition:opacity .35s ease,transform .35s ease}
+.anim .step.on{opacity:1;transform:none}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th{font-weight:600;text-align:left;font-size:13.5px;color:var(--graphite);padding:8px 10px;border-bottom:1.5px solid var(--ink)}
+td{padding:9px 10px;border-bottom:1px solid var(--hair);vertical-align:top}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.was{color:var(--wrong);text-decoration:line-through;text-decoration-thickness:1px}
+.pid{display:block;font-size:12.5px;color:var(--graphite)}
+.mark{font-weight:650}
+.mark.ok{color:var(--right)}
+.mark.bad{color:var(--wrong)}
+.tblwrap{overflow-x:auto;max-width:100%}
+.step{min-width:0}
+.final{font-stretch:108%;font-weight:700;font-size:1.25rem;margin:14px 0 0}
+.final .g{color:var(--right)}
+
+section.more{padding:76px 0 0}
+section.more h2{font-stretch:115%;font-weight:740;font-size:clamp(1.6rem,3vw,2.3rem);line-height:1.1;margin:0 0 14px;max-width:24ch}
+section.more > p,.intro{max-width:68ch}
+.board td:nth-child(2),.board td:nth-child(3){width:27%}
+.sub{display:block;font-size:13px;color:var(--graphite);margin-top:2px}
+.tag{font-size:12px;font-weight:600;border:1px solid var(--graphite);color:var(--graphite);border-radius:3px;padding:0 6px;margin-left:6px;white-space:nowrap}
+.c-ok{color:var(--right)}
+.c-bad{color:var(--wrong);font-weight:600}
+.c-held{color:var(--held)}
+.totals{display:flex;gap:42px;flex-wrap:wrap;margin:22px 0 26px}
+.totals div{font-size:14px;color:var(--graphite)}
+.totals b{display:block;font-stretch:112%;font-size:1.9rem;line-height:1.15;color:var(--ink)}
+.note{font-size:15px;color:#33404B;max-width:72ch;margin-top:18px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin:26px 0 30px}
+.two > div{background:var(--sheet);border:1px solid var(--hair);border-radius:4px;padding:22px 24px}
+.two h3{font-size:1.1rem;font-stretch:110%;margin:0 0 8px}
+.two p{margin:0;font-size:15.5px}
+.ask{font-stretch:110%;font-weight:700;font-size:1.35rem;line-height:1.3;max-width:40ch;margin:10px 0 34px}
+.note code{font-family:var(--mono);font-size:.88em}
+.cmd{font-family:var(--mono);font-size:13.5px;background:var(--sheet);border:1px solid var(--hair);border-radius:4px;padding:14px 16px;overflow-x:auto;white-space:pre;margin:10px 0 14px}
+.refused{color:var(--wrong);font-weight:600}
+footer{margin:80px 0 0;padding:26px 0 46px;border-top:1px solid var(--hair);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:14.5px;color:var(--graphite)}
+footer strong{color:var(--ink)}
+@media (max-width:860px){
+  .wrap{padding:0 18px}
+  .exhibit{padding:22px 18px}
+  .ex-grid,.ex-grid.second,.two{grid-template-columns:1fr;gap:26px}
+  h1{margin-top:36px}
+  .step{padding-left:46px}
+  .strip{flex-direction:column;gap:4px}
+  .board td:nth-child(2),.board td:nth-child(3){width:auto}
+}
+@media (max-width:560px){td,th{padding:8px 5px;font-size:13.5px}.pid{font-size:11.5px}.step{padding-left:40px}}
+@media (prefers-reduced-motion:reduce){.anim .step{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="strip">
+    <span>An agent that writes and repairs scraping rules, tested on SAP's OpenUI5 shopping cart demo</span>
+    <a href="https://github.com/fred1433/ui5-rule-repair">Code and recorded runs on GitHub</a>
+  </div>
+
+  <h1>The rule passed its own checks. The price was still wrong.</h1>
+  <p class="lede">An agent wrote a JSON extraction rule for the laptops in SAP's OpenUI5 shopping cart demo. In our modified copy, the product list shows each laptop's price plus shipping. The rule exported <strong>1.003,90 EUR</strong> for a laptop that costs <strong>989,00 EUR</strong>: valid JSON, no warning. SAP's own data caught it, and the agent repaired the rule.</p>
+
+  <div class="exhibit" id="exhibit">
+    <span class="copy-note">Modified copy of the SAP demo</span>
+    <div class="ex-grid">
+      <div>
+        <div class="shot row" style="aspect-ratio:469/160">
+          <img src="img/row.png" alt="List row of the modified demo: Astro Laptop 1516, 1.003,90 EUR, incl. 14,90 EUR shipping, Available" width="469" height="160">
+          <span class="box read" style="left:calc(79.98% - 6px);top:calc(10.00% - 5px);width:calc(16.61% + 12px);height:calc(23.75% + 10px)"></span>
+        </div>
+        <p class="caption"><b>Category list.</b> The first rule reads the price in this row. Here the row shows the price with shipping included: 1.003,90.</p>
+      </div>
+      <div class="rec bad">
+        <h2>What the first rule exported for HT-1251</h2>
+<pre>{
+  "product_id": "HT-1251",
+<span class="hl-bad">  "price": "1003.90",</span>
+  "currency": "EUR",
+  "availability": "A"
+}</pre>
+        <p>Runtime validator: passed. It found one well-formed amount where the rule expects one.</p>
+      </div>
+    </div>
+    <div class="ex-grid second">
+      <div>
+        <div class="shot hdr" style="aspect-ratio:953/135">
+          <img src="img/header.png" alt="Product page of the same laptop: price 989,00 EUR, Shipping: 14,90 EUR" width="953" height="135">
+          <span class="box truth" style="left:calc(87.90% - 6px);top:calc(17.78% - 5px);width:calc(7.06% + 12px);height:calc(32.59% + 10px)"></span>
+        </div>
+        <p class="caption"><b>Product page of the same laptop.</b> The product price, 989,00 EUR, with the shipping on its own line.</p>
+      </div>
+      <div class="rec good">
+        <h2>SAP's data for the same product</h2>
+<pre>{ "ProductId": "HT-1251",
+<span class="hl-good">  "Price": "989",</span> "CurrencyCode": "EUR" }</pre>
+        <p>localService/mockdata/Products.json, OpenUI5 1.154.0. Read by the test bench only.</p>
+      </div>
+    </div>
+    <p class="verdict">0 of 11 laptop prices exact. <span class="n">11 wrong prices exported</span> without a warning.</p>
+    <div class="act">
+      <button class="replay" id="replayBtn" aria-expanded="false" aria-controls="replay">Replay the repair</button>
+      <p>Shows the replay recorded in the repository. To run it again yourself: one command, no API key (below).</p>
+    </div>
+    <div id="replay" hidden>
+      
+      <div class="round">
+        <p class="round-h">Repair 1, recorded 2026-11-06</p>
+        <ol class="steps">
+          <li class="step">
+            <h3>Failure report</h3>
+            <p>Built from the runs the model may see (7 of the 13 scenarios). It holds what the page showed and which records disagreed with SAP's data, never SAP's values.</p>
+            <ul class="fails"><li><strong>List shows price plus shipping</strong>: 11 of 11 records exported with a wrong value; runtime validator status: pass</li><li><strong>OpenUI5 1.96.0</strong>: run stopped: navigation (timeout waiting for {&#x27;css&#x27;: &#x27;#container-cart---homeView--categoryList ul[role=list]&#x27;})</li></ul>
+            <p class="hash">SHA-256 <code>d313e95644b858e03bdf9ffae28b04d26e74b2567e034c69647b2eaa2df021ae</code><br>Replay rebuilds this report from a fresh run and refuses the recorded repair if one character differs.</p>
+          </li>
+          <li class="step">
+            <h3>What the repair changed in the rule</h3>
+            <pre class="diff"><span class="d-ctx">        &quot;target&quot;: {</span><span class="d-del">-         &quot;css&quot;: &quot;#container-cart---homeView--categoryList ul[role=list]&quot;</span><span class="d-add">+         &quot;css&quot;: &quot;#container-cart---homeView--categoryList li.sapMLIB&quot;,</span><span class="d-add">+         &quot;pick&quot;: &quot;first&quot;</span><span class="d-ctx">        }</span><span class="d-gap">  ...</span><span class="d-ctx">          &quot;within&quot;: {</span><span class="d-del">-           &quot;role&quot;: &quot;listitem&quot;,</span><span class="d-add">+           &quot;css&quot;: &quot;li.sapMLIB&quot;,</span><span class="d-ctx">            &quot;has_text&quot;: &quot;{category}&quot;,</span><span class="d-gap">  ...</span><span class="d-ctx">      &quot;detail_ready&quot;: {</span><span class="d-del">-       &quot;css&quot;: &quot;#container-cart---product--page .sapMOHTitle&quot;</span><span class="d-add">+       &quot;css&quot;: &quot;#container-cart---product--page .sapMOHNumberDiv .sapMObjectNumberText&quot;</span><span class="d-ctx">      }</span><span class="d-gap">  ...</span><span class="d-ctx">      &quot;price&quot;: {</span><span class="d-del">-       &quot;from&quot;: &quot;item&quot;,</span><span class="d-add">+       &quot;from&quot;: &quot;detail&quot;,</span><span class="d-ctx">        &quot;locator&quot;: {</span><span class="d-del">-         &quot;css&quot;: &quot;.sapMObjectNumber .sapMObjectNumberText&quot;</span><span class="d-add">+         &quot;css&quot;: &quot;#container-cart---product--page .sapMOHNumberDiv .sapMObjectNumber .sapMObjectNumberText&quot;</span><span class="d-ctx">        },</span><span class="d-gap">  ...</span><span class="d-ctx">      &quot;currency&quot;: {</span><span class="d-del">-       &quot;from&quot;: &quot;item&quot;,</span><span class="d-add">+       &quot;from&quot;: &quot;detail&quot;,</span><span class="d-ctx">        &quot;locator&quot;: {</span><span class="d-del">-         &quot;css&quot;: &quot;.sapMObjectNumber .sapMObjectNumberUnit&quot;</span><span class="d-add">+         &quot;css&quot;: &quot;#container-cart---product--page .sapMOHNumberDiv .sapMObjectNumber .sapMObjectNumberUnit&quot;</span><span class="d-ctx">        },</span><span class="d-gap">  ...</span><span class="d-ctx">      &quot;availability&quot;: {</span><span class="d-del">-       &quot;from&quot;: &quot;item&quot;,</span><span class="d-add">+       &quot;from&quot;: &quot;detail&quot;,</span><span class="d-ctx">        &quot;locator&quot;: {</span><span class="d-del">-         &quot;css&quot;: &quot;.sapMObjStatus .sapMObjStatusText&quot;</span><span class="d-add">+         &quot;css&quot;: &quot;#container-cart---product--page .sapMOHStatus .sapMObjStatus .sapMObjStatusText&quot;</span><span class="d-ctx">        },</span></pre>
+          </li>
+        </ol>
+      </div>
+      <ol class="steps" start="3" style="counter-reset:s 2">
+        <li class="step">
+          <h3>New extraction, compared with SAP's data</h3>
+          <div class="tblwrap">
+          <table>
+            <thead><tr><th>Laptop</th><th class="num">First rule</th><th class="num">Repaired rule</th><th class="num">SAP price</th><th></th></tr></thead>
+            <tbody>
+<tr><td>Notebook Basic 15<span class='pid'>HT-1000</span></td><td class='num was'>970,90</td><td class='num'>956,00</td><td class='num'>956,00</td><td class='mark ok'>match</td></tr>
+<tr><td>Notebook Basic 17<span class='pid'>HT-1001</span></td><td class='num was'>1.263,90</td><td class='num'>1.249,00</td><td class='num'>1.249,00</td><td class='mark ok'>match</td></tr>
+<tr><td>Notebook Basic 18<span class='pid'>HT-1002</span></td><td class='num was'>1.584,90</td><td class='num'>1.570,00</td><td class='num'>1.570,00</td><td class='mark ok'>match</td></tr>
+<tr><td>Notebook Basic 19<span class='pid'>HT-1003</span></td><td class='num was'>1.664,90</td><td class='num'>1.650,00</td><td class='num'>1.650,00</td><td class='mark ok'>match</td></tr>
+<tr><td>Notebook Professional 17<span class='pid'>HT-1011</span></td><td class='num was'>2.313,90</td><td class='num'>2.299,00</td><td class='num'>2.299,00</td><td class='mark ok'>match</td></tr>
+<tr><td>Astro Laptop 1516<span class='pid'>HT-1251</span></td><td class='num was'>1.003,90</td><td class='num'>989,00</td><td class='num'>989,00</td><td class='mark ok'>match</td></tr>
+<tr><td>Benda Laptop 1408<span class='pid'>HT-1253</span></td><td class='num was'>990,90</td><td class='num'>976,00</td><td class='num'>976,00</td><td class='mark ok'>match</td></tr>
+<tr><td>ITelO FlexTop I4000<span class='pid'>HT-8000</span></td><td class='num was'>813,90</td><td class='num'>799,00</td><td class='num'>799,00</td><td class='mark ok'>match</td></tr>
+<tr><td>ITelO FlexTop I6300c<span class='pid'>HT-8001</span></td><td class='num was'>813,90</td><td class='num'>799,00</td><td class='num'>799,00</td><td class='mark ok'>match</td></tr>
+<tr><td>ITelO FlexTop I9100<span class='pid'>HT-8002</span></td><td class='num was'>1.208,90</td><td class='num'>1.199,00</td><td class='num'>1.199,00</td><td class='mark ok'>match</td></tr>
+<tr><td>ITelO FlexTop I9800<span class='pid'>HT-8003</span></td><td class='num was'>1.397,90</td><td class='num'>1.388,00</td><td class='num'>1.388,00</td><td class='mark ok'>match</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p class="final"><span class="g">11 of 11 prices exact</span>, 0 wrong exported.</p>
+        </li>
+      </ol>
+    </div>
+  </div>
+
+  <section class="more">
+    <h2>13 runs for each rule, before and after the repair</h2>
+    <p class="intro">Each run opens the app in Chromium, follows the rule, then compares every exported price with SAP's data, joined on the product id taken from the URL after the click. A record the validator holds for review counts as not exact, never as wrong. Runs marked held out were never shown to the model.</p>
+    <div class="totals">
+      <div><b>80 / 116</b>prices exact, first rule (18 wrong exported)</div>
+      <div><b>116 / 116</b>prices exact after the repair (0 wrong exported)</div>
+    </div>
+    
+    <div class="tblwrap">
+    <table class="board">
+      <thead><tr><th>App version</th><th>First rule</th><th>Repaired rule</th></tr></thead>
+      <tbody>
+<tr><td><strong>OpenUI5 1.154.0</strong><span class='sub'>Laptops. SAP release, unmodified</span></td><td class='c-ok'>11 of 11 exact</td><td class='c-ok'>11 of 11 exact</td></tr>
+<tr><td><strong>List sorted Z to A</strong><span class='sub'>Laptops. Our change, written before the first rule</span></td><td class='c-ok'>11 of 11 exact</td><td class='c-ok'>11 of 11 exact</td></tr>
+<tr><td><strong>Shipping line in the product header</strong><span class='sub'>Laptops. Our change, written before the first rule</span></td><td class='c-ok'>11 of 11 exact</td><td class='c-ok'>11 of 11 exact</td></tr>
+<tr><td><strong>Shipping amount above the product header</strong><span class='sub'>Laptops. Our change, written before the first rule</span></td><td class='c-ok'>11 of 11 exact</td><td class='c-ok'>11 of 11 exact</td></tr>
+<tr><td><strong>Product price removed from screen</strong><span class='sub'>Laptops. Our change, written before the first rule</span></td><td class='c-ok'>11 of 11 held, none exported</td><td class='c-ok'>11 of 11 held, none exported</td></tr>
+<tr><td><strong>List shows price plus shipping</strong><span class='sub'>Laptops. Our change, written after reading it</span></td><td class='c-bad'>0 of 11 exact, 11 wrong exported</td><td class='c-ok'>11 of 11 exact</td></tr>
+<tr><td><strong>OpenUI5 1.96.0</strong><span class='sub'>Laptops. SAP release, unmodified</span></td><td class='c-held'>0 of 11: run stopped, nothing exported</td><td class='c-ok'>11 of 11 exact</td></tr>
+<tr><td><strong>OpenUI5 1.154.0</strong> <span class='tag'>held out</span><span class='sub'>Mice. SAP release, unmodified</span></td><td class='c-ok'>7 of 7 exact</td><td class='c-ok'>7 of 7 exact</td></tr>
+<tr><td><strong>Shipping amount above the product header</strong> <span class='tag'>held out</span><span class='sub'>Mice. Our change, written before the first rule</span></td><td class='c-ok'>7 of 7 exact</td><td class='c-ok'>7 of 7 exact</td></tr>
+<tr><td><strong>List shows price plus shipping</strong> <span class='tag'>held out</span><span class='sub'>Mice. Our change, written after reading it</span></td><td class='c-bad'>0 of 7 exact, 7 wrong exported</td><td class='c-ok'>7 of 7 exact</td></tr>
+<tr><td><strong>OpenUI5 1.96.0</strong> <span class='tag'>held out</span><span class='sub'>Mice. SAP release, unmodified</span></td><td class='c-held'>0 of 7: run stopped, nothing exported</td><td class='c-ok'>7 of 7 exact</td></tr>
+<tr><td><strong>OpenUI5 1.120.30</strong> <span class='tag'>held out</span><span class='sub'>Laptops. SAP release, unmodified</span></td><td class='c-ok'>11 of 11 exact</td><td class='c-ok'>11 of 11 exact</td></tr>
+<tr><td><strong>OpenUI5 1.148.0</strong> <span class='tag'>held out</span><span class='sub'>Laptops. SAP release, unmodified</span></td><td class='c-ok'>11 of 11 exact</td><td class='c-ok'>11 of 11 exact</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">Our first shipping changes were on the product page. The first rule reads the price in the list row, so they never reached it. We wrote the list-row change after reading the rule, and that is the change that fooled it. SAP's own 1.96.0 release of the demo broke it for real: its lists carry a different ARIA role, so the rule's first wait never ended and nothing was exported.</p>
+  </section>
+
+  <section class="more">
+    <h2>Two checks, two jobs</h2>
+    <div class="two">
+      <div>
+        <h3>The runtime validator sees the page only</h3>
+        <p>It flags a missing field, two candidate elements, a value of the wrong type, an item count that disagrees with the counter on screen, and duplicate ids. A flagged record is held for review with no value invented. It cannot tell that a single, well-formed amount is the wrong one.</p>
+      </div>
+      <div>
+        <h3>SAP's data is the known-good reference</h3>
+        <p>Only the test bench reads Products.json, never the agent or the extractor. Records are joined on ProductId, the price is compared as a decimal and the currency separately. The repair prompt is told which records disagreed, not the reference values.</p>
+      </div>
+    </div>
+    <p class="ask">Which known-good records does your team use today to accept a rule?</p>
+
+    <h2>Run it yourself</h2>
+    <div class="cmd">git clone https://github.com/fred1433/ui5-rule-repair
+cd ui5-rule-repair
+pip install -r requirements.txt &amp;&amp; python -m playwright install chromium
+python -m ui5rules replay</div>
+    <p class="note">The app runs from a local copy of SAP's files (Apache License 2.0), so repeated runs never touch SAP's servers. The first rule (2026-11-06) and each repair came from claude-opus-5-5 through <code>claude -p</code> on a Claude subscription, with every tool turned off. They are stored with their prompts and hashes; replay calls no model and costs nothing. The rule format is ours: plain JSON with steps, locators by text, role, label or CSS, types and contracts, no code. We do not know your engine's format, and mapping one rule to it would be a good first exercise.</p>
+  </section>
+
+  <footer>
+    <span>Built by <strong>Frederic de Lavenne de Choulot</strong>, The AI Pipe. OpenUI5 demo by SAP SE, shown here as a modified copy.</span>
+    <span>Talk it through in 15 minutes: <a href="https://cal.theaipipe.com">cal.theaipipe.com</a></span>
+  </footer>
+</div>
+<script>
+(function(){
+  var b=document.getElementById('replayBtn'), r=document.getElementById('replay');
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  b.addEventListener('click',function(){
+    var open=b.getAttribute('aria-expanded')==='true';
+    if(open){r.hidden=true;b.setAttribute('aria-expanded','false');b.textContent='Replay the repair';return;}
+    r.hidden=false;b.setAttribute('aria-expanded','true');b.textContent='Hide the replay';
+    var steps=r.querySelectorAll('.step');
+    if(reduce){steps.forEach(function(s){s.classList.add('on')});return;}
+    r.classList.add('anim');steps.forEach(function(s){s.classList.remove('on')});
+    steps.forEach(function(s,i){setTimeout(function(){s.classList.add('on')},120+i*420)});
+    setTimeout(function(){r.scrollIntoView({behavior:'smooth',block:'start'})},60);
+  });
+})();
+</script>
+</body>
+</html>
