@@ -5,7 +5,7 @@ An agent that writes a JSON extraction rule for a real enterprise web app (SAP's
 ```bash
 git clone https://github.com/fred1433/ui5-rule-repair && cd ui5-rule-repair
 pip install -r requirements.txt && python -m playwright install chromium
-python -m ui5rules replay        # about 4 minutes, no API key, no model call
+python -m ui5rules replay        # about 7 minutes, no API key, no model call
 ```
 
 Result of the last replay (`results/TABLE.md` holds the raw table, `results/results.json` every record):
