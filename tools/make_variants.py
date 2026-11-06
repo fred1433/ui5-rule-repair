@@ -108,7 +108,46 @@ def main():
     write("price_hidden", "view/Category.view.xml", replace_once(category, LIST_NUMBER, ""))
 
 
+# ---------------------------------------------------------------------------------------------
+# ROUND 2, written AFTER reading the first generated rule (proposals/01-generate), which reads the
+# price in the category list row and was therefore not reached by the round 1 shipping changes.
+# This change targets the list row on purpose; the page and the README say so.
+# ---------------------------------------------------------------------------------------------
+
+def round_two():
+    product = read("view/Product.view.xml")
+    category = read("view/Category.view.xml")
+    data = json.loads(read("localService/mockdata/Products.json"))
+    for p in data:
+        p["ShippingCost"] = shipping_cost(p)
+        p["DeliveredPrice"] = f"{float(p['Price']) + float(p['ShippingCost']):.2f}"
+    write("delivered_price", "localService/mockdata/Products.json", json.dumps(data, indent="\t", ensure_ascii=False))
+    # (d) delivered_price: the list row shows the delivered price (product + shipping), with a line
+    #     "incl. 14,90 EUR shipping"; the product page keeps the product price in its header and
+    #     gains a "Shipping: 14,90 EUR" attribute.
+    row = replace_once(category, "path : 'Price',\n\t\t\t\t\t\t\tformatter : '.formatter.price'",
+                       "path : 'DeliveredPrice',\n\t\t\t\t\t\t\tformatter : '.formatter.price'")
+    row = replace_once(row, """						<attributes>
+							<ObjectAttribute visible="true\"""", """						<attributes>
+							<ObjectAttribute text="incl. {
+								path : 'ShippingCost',
+								formatter : '.formatter.price'
+							} EUR shipping"/>
+							<ObjectAttribute visible="true\"""")
+    write("delivered_price", "view/Category.view.xml", row)
+    write("delivered_price", "view/Product.view.xml", replace_once(product, FIRST_ATTRIBUTE, """				<attributes>
+					<ObjectAttribute
+						title="Shipping"
+						text="{
+							path : 'ShippingCost',
+							formatter : '.formatter.price'
+						} EUR"/>
+					<ObjectAttribute
+						title="{i18n>productSupplierAttributeText}\""""))
+
+
 if __name__ == "__main__":
     main()
+    round_two()
     for v in sorted(p.name for p in OUT.iterdir() if p.is_dir()):
         print(v, sorted(str(f.relative_to(OUT / v)) for f in (OUT / v).rglob("*") if f.is_file()))

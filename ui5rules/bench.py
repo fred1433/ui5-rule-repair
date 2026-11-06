@@ -8,17 +8,30 @@ from .engine import run_rule
 from .rules import sha256
 from .validator import validate
 
-# (variant, category code, role).  "held_out" scenarios are never shown to the model.
+# Each scenario: an app version (SAP release, and our variant of 1.154.0), a category, a role.
+# "seen": the model may see its failures.  "held_out": never shown to the model.
+# round 1 = written before the first rule; round 2 = written after reading it; "sap" = SAP's own
+# published releases of the same demo, unmodified.
+def S(id_, variant, version, code, role, origin):
+    return {"id": id_, "variant": variant, "version": version, "category": code, "role": role, "origin": origin}
+
+
 SCENARIOS = [
-    ("base", "LT", "seen"),
-    ("reordered", "LT", "seen"),
-    ("shipping_attribute", "LT", "seen"),
-    ("shipping_banner", "LT", "seen"),
-    ("price_hidden", "LT", "seen"),
-    ("base", "MI", "held_out"),
-    ("shipping_banner", "MI", "held_out"),
+    S("base", "base", "1.154.0", "LT", "seen", "sap"),
+    S("reordered", "reordered", "1.154.0", "LT", "seen", "round 1"),
+    S("shipping_attribute", "shipping_attribute", "1.154.0", "LT", "seen", "round 1"),
+    S("shipping_banner", "shipping_banner", "1.154.0", "LT", "seen", "round 1"),
+    S("price_hidden", "price_hidden", "1.154.0", "LT", "seen", "round 1"),
+    S("delivered_price", "delivered_price", "1.154.0", "LT", "seen", "round 2"),
+    S("sap_1.96.0", "base", "1.96.0", "LT", "seen", "sap"),
+    S("base_mice", "base", "1.154.0", "MI", "held_out", "sap"),
+    S("shipping_banner_mice", "shipping_banner", "1.154.0", "MI", "held_out", "round 1"),
+    S("delivered_price_mice", "delivered_price", "1.154.0", "MI", "held_out", "round 2"),
+    S("sap_1.96.0_mice", "base", "1.96.0", "MI", "held_out", "sap"),
+    S("sap_1.120.30", "base", "1.120.30", "LT", "held_out", "sap"),
+    S("sap_1.148.0", "base", "1.148.0", "LT", "held_out", "sap"),
 ]
-# What a correct system does in each variant: export every price exactly, or hold every record.
+# What a correct system does: export every price exactly, or hold every record (price not on screen).
 EXPECT = {"price_hidden": "hold_all"}
 
 
@@ -27,10 +40,11 @@ def new_page(browser: Browser):
     return ctx, ctx.new_page()
 
 
-def run_scenario(browser: Browser, local, rule: dict, variant: str, code: str) -> dict:
+def run_scenario(browser: Browser, local, rule: dict, sc: dict) -> dict:
+    variant, code = sc["variant"], sc["category"]
     ctx, page = new_page(browser)
     try:
-        run = run_rule(page, local.url(variant), rule, {"category": oracle.category_name(code)})
+        run = run_rule(page, local.url(variant, sc["version"]), rule, {"category": oracle.category_name(code)})
     finally:
         ctx.close()
     report = validate(rule, run)
@@ -41,19 +55,12 @@ def run_scenario(browser: Browser, local, rule: dict, variant: str, code: str) -
     else:
         ok = score["price_exact_n"] == score["expected_n"] and score["wrong_accepted_n"] == 0 \
             and not score["missing"] and not score["unexpected"] and not score["duplicated"]
-    return {"variant": variant, "category": code, "category_name": oracle.category_name(code),
+    return {**sc, "category_name": oracle.category_name(code),
             "expect": expect, "ok": ok, "run": run, "validator": report, "bench": score}
 
 
 def run_all(browser: Browser, local, rule: dict, only=None) -> list[dict]:
-    out = []
-    for variant, code, role in SCENARIOS:
-        if only and (variant, code) not in only:
-            continue
-        r = run_scenario(browser, local, rule, variant, code)
-        r["role"] = role
-        out.append(r)
-    return out
+    return [run_scenario(browser, local, rule, sc) for sc in SCENARIOS if not only or sc["id"] in only]
 
 
 def failure_report(rule: dict, results: list[dict]) -> dict:
@@ -74,11 +81,14 @@ def failure_report(rule: dict, results: list[dict]) -> dict:
                   "extracted": {f: row["got"][f] for f in row["wrong_fields"]}}
                  for row in b["rows"] if row["exported"] and row["wrong_fields"]]
         scen.append({
-            "variant": r["variant"],
+            "scenario": r["id"],
+            "app_version": f"OpenUI5 {r['version']}" + ("" if r["variant"] == "base" else f", modified copy '{r['variant']}'"),
             "category": r["category_name"],
             "expected_behaviour": "hold every record for review: the product price is not on screen"
             if r["expect"] == "hold_all" else "export every product with its exact price",
-            "runtime_validator": {"status": v["status"], "batch_issues": v["batch_issues"], "record_issues": rec_issues},
+            "runtime_validator": {"status": v["status"], "record_issues": rec_issues, "batch_issues": [
+                {k: (i[k].split(":")[0] if i["kind"] == "engine_error" and k == "detail" else i[k]) for k in i}
+                for i in v["batch_issues"]]},
             "known_good_check": {
                 "note": "comparison with reference records kept by the bench; reference values are withheld",
                 "records_expected": b["expected_n"], "records_exported": b["exported_n"],

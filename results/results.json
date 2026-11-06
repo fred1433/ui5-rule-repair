@@ -1,0 +1,4737 @@
+{
+ "refused": null,
+ "stages": [
+  {
+   "proposal": "01-generate",
+   "meta": {
+    "kind": "generate",
+    "created_utc": "2026-11-06T13:11:43Z",
+    "made_with": "claude -p (Claude subscription, all tools disabled, empty working folder)",
+    "models": [
+     "claude-opus-5-5"
+    ],
+    "duration_ms": 16064,
+    "input_file": "observations.json",
+    "input_sha256": "375df4510f7f73a5b730f0e7c0eed656d8bc42801b07b138837fb4bb8ba1e602",
+    "prompt_sha256": "05dc0a0bb46c4ec69f7b617cd429e399a7ec9c6d66bcc2b9c640432750c5ac21",
+    "parent_rule_sha256": null,
+    "rule_sha256": "c924540a126d6e896ca705d90333d69ad12af445f5e5a772cbb94dbc6050924d",
+    "static_check_errors": []
+   },
+   "rule": {
+    "format": "ui5-rule-repair/rule@1",
+    "name": "Product catalog - {category} - id, price, currency, availability",
+    "parameters": {
+     "category": "Laptops"
+    },
+    "steps": [
+     {
+      "action": "wait_for",
+      "target": {
+       "css": "#container-cart---homeView--categoryList ul[role=list]"
+      }
+     },
+     {
+      "action": "read_count",
+      "target": {
+       "css": "div.sapMLIBCounter",
+       "within": {
+        "role": "listitem",
+        "has_text": "{category}",
+        "within": {
+         "css": "#container-cart---homeView--categoryList"
+        }
+       }
+      },
+      "regex": "(\\d+)"
+     },
+     {
+      "action": "click",
+      "target": {
+       "text": "{category}",
+       "within": {
+        "css": "#container-cart---homeView--categoryList"
+       }
+      },
+      "then_wait_for": {
+       "role": "main",
+       "name": "{category} Items of Category"
+      }
+     },
+     {
+      "action": "wait_for",
+      "target": {
+       "css": "#container-cart---category--productList li.sapMLIB",
+       "pick": "first"
+      }
+     }
+    ],
+    "items": {
+     "locator": {
+      "css": "#container-cart---category--productList li.sapMLIB"
+     },
+     "open": true,
+     "detail_ready": {
+      "css": "#container-cart---product--page .sapMOHTitle"
+     }
+    },
+    "fields": {
+     "product_id": {
+      "from": "url",
+      "regex": "/product/([^/?#]+)",
+      "type": "id",
+      "pattern": "[A-Z]+-\\d+"
+     },
+     "price": {
+      "from": "item",
+      "locator": {
+       "css": ".sapMObjectNumber .sapMObjectNumberText"
+      },
+      "type": "decimal",
+      "number_format": {
+       "decimal": ",",
+       "group": "."
+      }
+     },
+     "currency": {
+      "from": "item",
+      "locator": {
+       "css": ".sapMObjectNumber .sapMObjectNumberUnit"
+      },
+      "type": "currency_code"
+     },
+     "availability": {
+      "from": "item",
+      "locator": {
+       "css": ".sapMObjStatus .sapMObjStatusText"
+      },
+      "type": "enum",
+      "map": {
+       "Available": "A",
+       "Out of Stock": "O",
+       "Discontinued": "D"
+      }
+     }
+    },
+    "key": "product_id",
+    "count_check": true
+   },
+   "results": [
+    {
+     "id": "base",
+     "variant": "base",
+     "version": "1.154.0",
+     "origin": "sap",
+     "category": "LT",
+     "category_name": "Laptops",
+     "role": "seen",
+     "expect": "export_all",
+     "ok": true,
+     "bench": {
+      "category": "LT",
+      "expected_n": 11,
+      "price_exact_n": 11,
+      "exported_n": 11,
+      "held_for_review_n": 0,
+      "wrong_accepted_n": 0,
+      "missing": [],
+      "unexpected": [],
+      "duplicated": [],
+      "rows": [
+       {
+        "product_id": "HT-1000",
+        "name": "Notebook Basic 15",
+        "exported": true,
+        "expected": {
+         "price": "956",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "956.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1001",
+        "name": "Notebook Basic 17",
+        "exported": true,
+        "expected": {
+         "price": "1249",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1249.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1002",
+        "name": "Notebook Basic 18",
+        "exported": true,
+        "expected": {
+         "price": "1570",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1570.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1003",
+        "name": "Notebook Basic 19",
+        "exported": true,
+        "expected": {
+         "price": "1650",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1650.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1011",
+        "name": "Notebook Professional 17",
+        "exported": true,
+        "expected": {
+         "price": "2299",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": "2299.00",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1251",
+        "name": "Astro Laptop 1516",
+        "exported": true,
+        "expected": {
+         "price": "989",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "989.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1253",
+        "name": "Benda Laptop 1408",
+        "exported": true,
+        "expected": {
+         "price": "976",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "976.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8000",
+        "name": "ITelO FlexTop I4000",
+        "exported": true,
+        "expected": {
+         "price": "799",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8001",
+        "name": "ITelO FlexTop I6300c",
+        "exported": true,
+        "expected": {
+         "price": "799",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8002",
+        "name": "ITelO FlexTop I9100",
+        "exported": true,
+        "expected": {
+         "price": "1199",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1199.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8003",
+        "name": "ITelO FlexTop I9800",
+        "exported": true,
+        "expected": {
+         "price": "1388",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1388.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       }
+      ]
+     },
+     "validator": {
+      "status": "pass",
+      "batch_issues": [],
+      "review_n": 0,
+      "screen_count": 11,
+      "records": [
+       {
+        "index": 0,
+        "key": "HT-1251",
+        "issues": [],
+        "values": {
+         "price": "989.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1251"
+        },
+        "raw": {
+         "price": "989,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1251"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1251"
+       },
+       {
+        "index": 1,
+        "key": "HT-1253",
+        "issues": [],
+        "values": {
+         "price": "976.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1253"
+        },
+        "raw": {
+         "price": "976,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1253"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1253"
+       },
+       {
+        "index": 2,
+        "key": "HT-8000",
+        "issues": [],
+        "values": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8000"
+        },
+        "raw": {
+         "price": "799,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8000"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8000"
+       },
+       {
+        "index": 3,
+        "key": "HT-8001",
+        "issues": [],
+        "values": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8001"
+        },
+        "raw": {
+         "price": "799,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8001"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8001"
+       },
+       {
+        "index": 4,
+        "key": "HT-8002",
+        "issues": [],
+        "values": {
+         "price": "1199.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8002"
+        },
+        "raw": {
+         "price": "1.199,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8002"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8002"
+       },
+       {
+        "index": 5,
+        "key": "HT-8003",
+        "issues": [],
+        "values": {
+         "price": "1388.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8003"
+        },
+        "raw": {
+         "price": "1.388,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8003"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8003"
+       },
+       {
+        "index": 6,
+        "key": "HT-1000",
+        "issues": [],
+        "values": {
+         "price": "956.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1000"
+        },
+        "raw": {
+         "price": "956,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1000"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1000"
+       },
+       {
+        "index": 7,
+        "key": "HT-1001",
+        "issues": [],
+        "values": {
+         "price": "1249.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1001"
+        },
+        "raw": {
+         "price": "1.249,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1001"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1001"
+       },
+       {
+        "index": 8,
+        "key": "HT-1002",
+        "issues": [],
+        "values": {
+         "price": "1570.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1002"
+        },
+        "raw": {
+         "price": "1.570,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1002"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1002"
+       },
+       {
+        "index": 9,
+        "key": "HT-1003",
+        "issues": [],
+        "values": {
+         "price": "1650.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1003"
+        },
+        "raw": {
+         "price": "1.650,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1003"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1003"
+       },
+       {
+        "index": 10,
+        "key": "HT-1011",
+        "issues": [],
+        "values": {
+         "price": "2299.00",
+         "currency": "EUR",
+         "availability": "O",
+         "product_id": "HT-1011"
+        },
+        "raw": {
+         "price": "2.299,00",
+         "currency": "EUR",
+         "availability": "Out of Stock",
+         "product_id": "HT-1011"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1011"
+       }
+      ]
+     }
+    },
+    {
+     "id": "reordered",
+     "variant": "reordered",
+     "version": "1.154.0",
+     "origin": "round 1",
+     "category": "LT",
+     "category_name": "Laptops",
+     "role": "seen",
+     "expect": "export_all",
+     "ok": true,
+     "bench": {
+      "category": "LT",
+      "expected_n": 11,
+      "price_exact_n": 11,
+      "exported_n": 11,
+      "held_for_review_n": 0,
+      "wrong_accepted_n": 0,
+      "missing": [],
+      "unexpected": [],
+      "duplicated": [],
+      "rows": [
+       {
+        "product_id": "HT-1000",
+        "name": "Notebook Basic 15",
+        "exported": true,
+        "expected": {
+         "price": "956",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "956.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1001",
+        "name": "Notebook Basic 17",
+        "exported": true,
+        "expected": {
+         "price": "1249",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1249.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1002",
+        "name": "Notebook Basic 18",
+        "exported": true,
+        "expected": {
+         "price": "1570",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1570.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1003",
+        "name": "Notebook Basic 19",
+        "exported": true,
+        "expected": {
+         "price": "1650",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1650.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1011",
+        "name": "Notebook Professional 17",
+        "exported": true,
+        "expected": {
+         "price": "2299",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": "2299.00",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1251",
+        "name": "Astro Laptop 1516",
+        "exported": true,
+        "expected": {
+         "price": "989",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "989.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1253",
+        "name": "Benda Laptop 1408",
+        "exported": true,
+        "expected": {
+         "price": "976",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "976.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8000",
+        "name": "ITelO FlexTop I4000",
+        "exported": true,
+        "expected": {
+         "price": "799",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8001",
+        "name": "ITelO FlexTop I6300c",
+        "exported": true,
+        "expected": {
+         "price": "799",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8002",
+        "name": "ITelO FlexTop I9100",
+        "exported": true,
+        "expected": {
+         "price": "1199",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1199.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8003",
+        "name": "ITelO FlexTop I9800",
+        "exported": true,
+        "expected": {
+         "price": "1388",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1388.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       }
+      ]
+     },
+     "validator": {
+      "status": "pass",
+      "batch_issues": [],
+      "review_n": 0,
+      "screen_count": 11,
+      "records": [
+       {
+        "index": 0,
+        "key": "HT-1011",
+        "issues": [],
+        "values": {
+         "price": "2299.00",
+         "currency": "EUR",
+         "availability": "O",
+         "product_id": "HT-1011"
+        },
+        "raw": {
+         "price": "2.299,00",
+         "currency": "EUR",
+         "availability": "Out of Stock",
+         "product_id": "HT-1011"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1011"
+       },
+       {
+        "index": 1,
+        "key": "HT-1003",
+        "issues": [],
+        "values": {
+         "price": "1650.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1003"
+        },
+        "raw": {
+         "price": "1.650,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1003"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1003"
+       },
+       {
+        "index": 2,
+        "key": "HT-1002",
+        "issues": [],
+        "values": {
+         "price": "1570.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1002"
+        },
+        "raw": {
+         "price": "1.570,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1002"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1002"
+       },
+       {
+        "index": 3,
+        "key": "HT-1001",
+        "issues": [],
+        "values": {
+         "price": "1249.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1001"
+        },
+        "raw": {
+         "price": "1.249,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1001"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1001"
+       },
+       {
+        "index": 4,
+        "key": "HT-1000",
+        "issues": [],
+        "values": {
+         "price": "956.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1000"
+        },
+        "raw": {
+         "price": "956,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1000"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1000"
+       },
+       {
+        "index": 5,
+        "key": "HT-8003",
+        "issues": [],
+        "values": {
+         "price": "1388.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8003"
+        },
+        "raw": {
+         "price": "1.388,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8003"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8003"
+       },
+       {
+        "index": 6,
+        "key": "HT-8002",
+        "issues": [],
+        "values": {
+         "price": "1199.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8002"
+        },
+        "raw": {
+         "price": "1.199,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8002"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8002"
+       },
+       {
+        "index": 7,
+        "key": "HT-8001",
+        "issues": [],
+        "values": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8001"
+        },
+        "raw": {
+         "price": "799,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8001"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8001"
+       },
+       {
+        "index": 8,
+        "key": "HT-8000",
+        "issues": [],
+        "values": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8000"
+        },
+        "raw": {
+         "price": "799,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8000"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8000"
+       },
+       {
+        "index": 9,
+        "key": "HT-1253",
+        "issues": [],
+        "values": {
+         "price": "976.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1253"
+        },
+        "raw": {
+         "price": "976,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1253"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1253"
+       },
+       {
+        "index": 10,
+        "key": "HT-1251",
+        "issues": [],
+        "values": {
+         "price": "989.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1251"
+        },
+        "raw": {
+         "price": "989,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1251"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1251"
+       }
+      ]
+     }
+    },
+    {
+     "id": "shipping_attribute",
+     "variant": "shipping_attribute",
+     "version": "1.154.0",
+     "origin": "round 1",
+     "category": "LT",
+     "category_name": "Laptops",
+     "role": "seen",
+     "expect": "export_all",
+     "ok": true,
+     "bench": {
+      "category": "LT",
+      "expected_n": 11,
+      "price_exact_n": 11,
+      "exported_n": 11,
+      "held_for_review_n": 0,
+      "wrong_accepted_n": 0,
+      "missing": [],
+      "unexpected": [],
+      "duplicated": [],
+      "rows": [
+       {
+        "product_id": "HT-1000",
+        "name": "Notebook Basic 15",
+        "exported": true,
+        "expected": {
+         "price": "956",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "956.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1001",
+        "name": "Notebook Basic 17",
+        "exported": true,
+        "expected": {
+         "price": "1249",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1249.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1002",
+        "name": "Notebook Basic 18",
+        "exported": true,
+        "expected": {
+         "price": "1570",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1570.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1003",
+        "name": "Notebook Basic 19",
+        "exported": true,
+        "expected": {
+         "price": "1650",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1650.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1011",
+        "name": "Notebook Professional 17",
+        "exported": true,
+        "expected": {
+         "price": "2299",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": "2299.00",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1251",
+        "name": "Astro Laptop 1516",
+        "exported": true,
+        "expected": {
+         "price": "989",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "989.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1253",
+        "name": "Benda Laptop 1408",
+        "exported": true,
+        "expected": {
+         "price": "976",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "976.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8000",
+        "name": "ITelO FlexTop I4000",
+        "exported": true,
+        "expected": {
+         "price": "799",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8001",
+        "name": "ITelO FlexTop I6300c",
+        "exported": true,
+        "expected": {
+         "price": "799",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8002",
+        "name": "ITelO FlexTop I9100",
+        "exported": true,
+        "expected": {
+         "price": "1199",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1199.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8003",
+        "name": "ITelO FlexTop I9800",
+        "exported": true,
+        "expected": {
+         "price": "1388",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1388.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       }
+      ]
+     },
+     "validator": {
+      "status": "pass",
+      "batch_issues": [],
+      "review_n": 0,
+      "screen_count": 11,
+      "records": [
+       {
+        "index": 0,
+        "key": "HT-1251",
+        "issues": [],
+        "values": {
+         "price": "989.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1251"
+        },
+        "raw": {
+         "price": "989,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1251"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1251"
+       },
+       {
+        "index": 1,
+        "key": "HT-1253",
+        "issues": [],
+        "values": {
+         "price": "976.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1253"
+        },
+        "raw": {
+         "price": "976,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1253"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1253"
+       },
+       {
+        "index": 2,
+        "key": "HT-8000",
+        "issues": [],
+        "values": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8000"
+        },
+        "raw": {
+         "price": "799,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8000"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8000"
+       },
+       {
+        "index": 3,
+        "key": "HT-8001",
+        "issues": [],
+        "values": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8001"
+        },
+        "raw": {
+         "price": "799,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8001"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8001"
+       },
+       {
+        "index": 4,
+        "key": "HT-8002",
+        "issues": [],
+        "values": {
+         "price": "1199.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8002"
+        },
+        "raw": {
+         "price": "1.199,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8002"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8002"
+       },
+       {
+        "index": 5,
+        "key": "HT-8003",
+        "issues": [],
+        "values": {
+         "price": "1388.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8003"
+        },
+        "raw": {
+         "price": "1.388,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8003"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8003"
+       },
+       {
+        "index": 6,
+        "key": "HT-1000",
+        "issues": [],
+        "values": {
+         "price": "956.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1000"
+        },
+        "raw": {
+         "price": "956,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1000"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1000"
+       },
+       {
+        "index": 7,
+        "key": "HT-1001",
+        "issues": [],
+        "values": {
+         "price": "1249.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1001"
+        },
+        "raw": {
+         "price": "1.249,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1001"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1001"
+       },
+       {
+        "index": 8,
+        "key": "HT-1002",
+        "issues": [],
+        "values": {
+         "price": "1570.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1002"
+        },
+        "raw": {
+         "price": "1.570,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1002"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1002"
+       },
+       {
+        "index": 9,
+        "key": "HT-1003",
+        "issues": [],
+        "values": {
+         "price": "1650.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1003"
+        },
+        "raw": {
+         "price": "1.650,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1003"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1003"
+       },
+       {
+        "index": 10,
+        "key": "HT-1011",
+        "issues": [],
+        "values": {
+         "price": "2299.00",
+         "currency": "EUR",
+         "availability": "O",
+         "product_id": "HT-1011"
+        },
+        "raw": {
+         "price": "2.299,00",
+         "currency": "EUR",
+         "availability": "Out of Stock",
+         "product_id": "HT-1011"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1011"
+       }
+      ]
+     }
+    },
+    {
+     "id": "shipping_banner",
+     "variant": "shipping_banner",
+     "version": "1.154.0",
+     "origin": "round 1",
+     "category": "LT",
+     "category_name": "Laptops",
+     "role": "seen",
+     "expect": "export_all",
+     "ok": true,
+     "bench": {
+      "category": "LT",
+      "expected_n": 11,
+      "price_exact_n": 11,
+      "exported_n": 11,
+      "held_for_review_n": 0,
+      "wrong_accepted_n": 0,
+      "missing": [],
+      "unexpected": [],
+      "duplicated": [],
+      "rows": [
+       {
+        "product_id": "HT-1000",
+        "name": "Notebook Basic 15",
+        "exported": true,
+        "expected": {
+         "price": "956",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "956.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1001",
+        "name": "Notebook Basic 17",
+        "exported": true,
+        "expected": {
+         "price": "1249",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1249.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1002",
+        "name": "Notebook Basic 18",
+        "exported": true,
+        "expected": {
+         "price": "1570",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1570.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1003",
+        "name": "Notebook Basic 19",
+        "exported": true,
+        "expected": {
+         "price": "1650",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1650.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1011",
+        "name": "Notebook Professional 17",
+        "exported": true,
+        "expected": {
+         "price": "2299",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": "2299.00",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1251",
+        "name": "Astro Laptop 1516",
+        "exported": true,
+        "expected": {
+         "price": "989",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "989.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1253",
+        "name": "Benda Laptop 1408",
+        "exported": true,
+        "expected": {
+         "price": "976",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "976.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8000",
+        "name": "ITelO FlexTop I4000",
+        "exported": true,
+        "expected": {
+         "price": "799",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8001",
+        "name": "ITelO FlexTop I6300c",
+        "exported": true,
+        "expected": {
+         "price": "799",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8002",
+        "name": "ITelO FlexTop I9100",
+        "exported": true,
+        "expected": {
+         "price": "1199",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1199.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8003",
+        "name": "ITelO FlexTop I9800",
+        "exported": true,
+        "expected": {
+         "price": "1388",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1388.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       }
+      ]
+     },
+     "validator": {
+      "status": "pass",
+      "batch_issues": [],
+      "review_n": 0,
+      "screen_count": 11,
+      "records": [
+       {
+        "index": 0,
+        "key": "HT-1251",
+        "issues": [],
+        "values": {
+         "price": "989.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1251"
+        },
+        "raw": {
+         "price": "989,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1251"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1251"
+       },
+       {
+        "index": 1,
+        "key": "HT-1253",
+        "issues": [],
+        "values": {
+         "price": "976.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1253"
+        },
+        "raw": {
+         "price": "976,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1253"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1253"
+       },
+       {
+        "index": 2,
+        "key": "HT-8000",
+        "issues": [],
+        "values": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8000"
+        },
+        "raw": {
+         "price": "799,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8000"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8000"
+       },
+       {
+        "index": 3,
+        "key": "HT-8001",
+        "issues": [],
+        "values": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8001"
+        },
+        "raw": {
+         "price": "799,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8001"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8001"
+       },
+       {
+        "index": 4,
+        "key": "HT-8002",
+        "issues": [],
+        "values": {
+         "price": "1199.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8002"
+        },
+        "raw": {
+         "price": "1.199,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8002"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8002"
+       },
+       {
+        "index": 5,
+        "key": "HT-8003",
+        "issues": [],
+        "values": {
+         "price": "1388.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8003"
+        },
+        "raw": {
+         "price": "1.388,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8003"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8003"
+       },
+       {
+        "index": 6,
+        "key": "HT-1000",
+        "issues": [],
+        "values": {
+         "price": "956.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1000"
+        },
+        "raw": {
+         "price": "956,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1000"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1000"
+       },
+       {
+        "index": 7,
+        "key": "HT-1001",
+        "issues": [],
+        "values": {
+         "price": "1249.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1001"
+        },
+        "raw": {
+         "price": "1.249,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1001"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1001"
+       },
+       {
+        "index": 8,
+        "key": "HT-1002",
+        "issues": [],
+        "values": {
+         "price": "1570.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1002"
+        },
+        "raw": {
+         "price": "1.570,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1002"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1002"
+       },
+       {
+        "index": 9,
+        "key": "HT-1003",
+        "issues": [],
+        "values": {
+         "price": "1650.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1003"
+        },
+        "raw": {
+         "price": "1.650,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1003"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1003"
+       },
+       {
+        "index": 10,
+        "key": "HT-1011",
+        "issues": [],
+        "values": {
+         "price": "2299.00",
+         "currency": "EUR",
+         "availability": "O",
+         "product_id": "HT-1011"
+        },
+        "raw": {
+         "price": "2.299,00",
+         "currency": "EUR",
+         "availability": "Out of Stock",
+         "product_id": "HT-1011"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1011"
+       }
+      ]
+     }
+    },
+    {
+     "id": "price_hidden",
+     "variant": "price_hidden",
+     "version": "1.154.0",
+     "origin": "round 1",
+     "category": "LT",
+     "category_name": "Laptops",
+     "role": "seen",
+     "expect": "hold_all",
+     "ok": true,
+     "bench": {
+      "category": "LT",
+      "expected_n": 11,
+      "price_exact_n": 0,
+      "exported_n": 0,
+      "held_for_review_n": 11,
+      "wrong_accepted_n": 0,
+      "missing": [],
+      "unexpected": [],
+      "duplicated": [],
+      "rows": [
+       {
+        "product_id": "HT-1000",
+        "name": "Notebook Basic 15",
+        "exported": false,
+        "expected": {
+         "price": "956",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-1000"
+        }
+       },
+       {
+        "product_id": "HT-1001",
+        "name": "Notebook Basic 17",
+        "exported": false,
+        "expected": {
+         "price": "1249",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-1001"
+        }
+       },
+       {
+        "product_id": "HT-1002",
+        "name": "Notebook Basic 18",
+        "exported": false,
+        "expected": {
+         "price": "1570",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-1002"
+        }
+       },
+       {
+        "product_id": "HT-1003",
+        "name": "Notebook Basic 19",
+        "exported": false,
+        "expected": {
+         "price": "1650",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-1003"
+        }
+       },
+       {
+        "product_id": "HT-1011",
+        "name": "Notebook Professional 17",
+        "exported": false,
+        "expected": {
+         "price": "2299",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Out of Stock",
+         "product_id": "HT-1011"
+        }
+       },
+       {
+        "product_id": "HT-1251",
+        "name": "Astro Laptop 1516",
+        "exported": false,
+        "expected": {
+         "price": "989",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-1251"
+        }
+       },
+       {
+        "product_id": "HT-1253",
+        "name": "Benda Laptop 1408",
+        "exported": false,
+        "expected": {
+         "price": "976",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-1253"
+        }
+       },
+       {
+        "product_id": "HT-8000",
+        "name": "ITelO FlexTop I4000",
+        "exported": false,
+        "expected": {
+         "price": "799",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-8000"
+        }
+       },
+       {
+        "product_id": "HT-8001",
+        "name": "ITelO FlexTop I6300c",
+        "exported": false,
+        "expected": {
+         "price": "799",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-8001"
+        }
+       },
+       {
+        "product_id": "HT-8002",
+        "name": "ITelO FlexTop I9100",
+        "exported": false,
+        "expected": {
+         "price": "1199",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-8002"
+        }
+       },
+       {
+        "product_id": "HT-8003",
+        "name": "ITelO FlexTop I9800",
+        "exported": false,
+        "expected": {
+         "price": "1388",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-8003"
+        }
+       }
+      ]
+     },
+     "validator": {
+      "status": "needs_review",
+      "batch_issues": [],
+      "review_n": 11,
+      "screen_count": 11,
+      "records": [
+       {
+        "index": 0,
+        "key": "HT-1251",
+        "issues": [
+         {
+          "field": "price",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         },
+         {
+          "field": "currency",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         }
+        ],
+        "values": {
+         "price": null,
+         "currency": null,
+         "availability": "A",
+         "product_id": "HT-1251"
+        },
+        "raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-1251"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1251"
+       },
+       {
+        "index": 1,
+        "key": "HT-1253",
+        "issues": [
+         {
+          "field": "price",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         },
+         {
+          "field": "currency",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         }
+        ],
+        "values": {
+         "price": null,
+         "currency": null,
+         "availability": "A",
+         "product_id": "HT-1253"
+        },
+        "raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-1253"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1253"
+       },
+       {
+        "index": 2,
+        "key": "HT-8000",
+        "issues": [
+         {
+          "field": "price",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         },
+         {
+          "field": "currency",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         }
+        ],
+        "values": {
+         "price": null,
+         "currency": null,
+         "availability": "A",
+         "product_id": "HT-8000"
+        },
+        "raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-8000"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8000"
+       },
+       {
+        "index": 3,
+        "key": "HT-8001",
+        "issues": [
+         {
+          "field": "price",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         },
+         {
+          "field": "currency",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         }
+        ],
+        "values": {
+         "price": null,
+         "currency": null,
+         "availability": "A",
+         "product_id": "HT-8001"
+        },
+        "raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-8001"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8001"
+       },
+       {
+        "index": 4,
+        "key": "HT-8002",
+        "issues": [
+         {
+          "field": "price",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         },
+         {
+          "field": "currency",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         }
+        ],
+        "values": {
+         "price": null,
+         "currency": null,
+         "availability": "A",
+         "product_id": "HT-8002"
+        },
+        "raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-8002"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8002"
+       },
+       {
+        "index": 5,
+        "key": "HT-8003",
+        "issues": [
+         {
+          "field": "price",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         },
+         {
+          "field": "currency",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         }
+        ],
+        "values": {
+         "price": null,
+         "currency": null,
+         "availability": "A",
+         "product_id": "HT-8003"
+        },
+        "raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-8003"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8003"
+       },
+       {
+        "index": 6,
+        "key": "HT-1000",
+        "issues": [
+         {
+          "field": "price",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         },
+         {
+          "field": "currency",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         }
+        ],
+        "values": {
+         "price": null,
+         "currency": null,
+         "availability": "A",
+         "product_id": "HT-1000"
+        },
+        "raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-1000"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1000"
+       },
+       {
+        "index": 7,
+        "key": "HT-1001",
+        "issues": [
+         {
+          "field": "price",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         },
+         {
+          "field": "currency",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         }
+        ],
+        "values": {
+         "price": null,
+         "currency": null,
+         "availability": "A",
+         "product_id": "HT-1001"
+        },
+        "raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-1001"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1001"
+       },
+       {
+        "index": 8,
+        "key": "HT-1002",
+        "issues": [
+         {
+          "field": "price",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         },
+         {
+          "field": "currency",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         }
+        ],
+        "values": {
+         "price": null,
+         "currency": null,
+         "availability": "A",
+         "product_id": "HT-1002"
+        },
+        "raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-1002"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1002"
+       },
+       {
+        "index": 9,
+        "key": "HT-1003",
+        "issues": [
+         {
+          "field": "price",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         },
+         {
+          "field": "currency",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         }
+        ],
+        "values": {
+         "price": null,
+         "currency": null,
+         "availability": "A",
+         "product_id": "HT-1003"
+        },
+        "raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Available",
+         "product_id": "HT-1003"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1003"
+       },
+       {
+        "index": 10,
+        "key": "HT-1011",
+        "issues": [
+         {
+          "field": "price",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         },
+         {
+          "field": "currency",
+          "kind": "missing",
+          "detail": "no visible element matched"
+         }
+        ],
+        "values": {
+         "price": null,
+         "currency": null,
+         "availability": "O",
+         "product_id": "HT-1011"
+        },
+        "raw": {
+         "price": null,
+         "currency": null,
+         "availability": "Out of Stock",
+         "product_id": "HT-1011"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1011"
+       }
+      ]
+     }
+    },
+    {
+     "id": "delivered_price",
+     "variant": "delivered_price",
+     "version": "1.154.0",
+     "origin": "round 2",
+     "category": "LT",
+     "category_name": "Laptops",
+     "role": "seen",
+     "expect": "export_all",
+     "ok": false,
+     "bench": {
+      "category": "LT",
+      "expected_n": 11,
+      "price_exact_n": 0,
+      "exported_n": 11,
+      "held_for_review_n": 0,
+      "wrong_accepted_n": 11,
+      "missing": [],
+      "unexpected": [],
+      "duplicated": [],
+      "rows": [
+       {
+        "product_id": "HT-1000",
+        "name": "Notebook Basic 15",
+        "exported": true,
+        "expected": {
+         "price": "956",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "970.90",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": [
+         "price"
+        ]
+       },
+       {
+        "product_id": "HT-1001",
+        "name": "Notebook Basic 17",
+        "exported": true,
+        "expected": {
+         "price": "1249",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1263.90",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": [
+         "price"
+        ]
+       },
+       {
+        "product_id": "HT-1002",
+        "name": "Notebook Basic 18",
+        "exported": true,
+        "expected": {
+         "price": "1570",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1584.90",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": [
+         "price"
+        ]
+       },
+       {
+        "product_id": "HT-1003",
+        "name": "Notebook Basic 19",
+        "exported": true,
+        "expected": {
+         "price": "1650",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1664.90",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": [
+         "price"
+        ]
+       },
+       {
+        "product_id": "HT-1011",
+        "name": "Notebook Professional 17",
+        "exported": true,
+        "expected": {
+         "price": "2299",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": "2313.90",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "wrong_fields": [
+         "price"
+        ]
+       },
+       {
+        "product_id": "HT-1251",
+        "name": "Astro Laptop 1516",
+        "exported": true,
+        "expected": {
+         "price": "989",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1003.90",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": [
+         "price"
+        ]
+       },
+       {
+        "product_id": "HT-1253",
+        "name": "Benda Laptop 1408",
+        "exported": true,
+        "expected": {
+         "price": "976",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "990.90",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": [
+         "price"
+        ]
+       },
+       {
+        "product_id": "HT-8000",
+        "name": "ITelO FlexTop I4000",
+        "exported": true,
+        "expected": {
+         "price": "799",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "813.90",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": [
+         "price"
+        ]
+       },
+       {
+        "product_id": "HT-8001",
+        "name": "ITelO FlexTop I6300c",
+        "exported": true,
+        "expected": {
+         "price": "799",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "813.90",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": [
+         "price"
+        ]
+       },
+       {
+        "product_id": "HT-8002",
+        "name": "ITelO FlexTop I9100",
+        "exported": true,
+        "expected": {
+         "price": "1199",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1208.90",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": [
+         "price"
+        ]
+       },
+       {
+        "product_id": "HT-8003",
+        "name": "ITelO FlexTop I9800",
+        "exported": true,
+        "expected": {
+         "price": "1388",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1397.90",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": [
+         "price"
+        ]
+       }
+      ]
+     },
+     "validator": {
+      "status": "pass",
+      "batch_issues": [],
+      "review_n": 0,
+      "screen_count": 11,
+      "records": [
+       {
+        "index": 0,
+        "key": "HT-1251",
+        "issues": [],
+        "values": {
+         "price": "1003.90",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1251"
+        },
+        "raw": {
+         "price": "1.003,90",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1251"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1251"
+       },
+       {
+        "index": 1,
+        "key": "HT-1253",
+        "issues": [],
+        "values": {
+         "price": "990.90",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1253"
+        },
+        "raw": {
+         "price": "990,90",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1253"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1253"
+       },
+       {
+        "index": 2,
+        "key": "HT-8000",
+        "issues": [],
+        "values": {
+         "price": "813.90",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8000"
+        },
+        "raw": {
+         "price": "813,90",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8000"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8000"
+       },
+       {
+        "index": 3,
+        "key": "HT-8001",
+        "issues": [],
+        "values": {
+         "price": "813.90",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8001"
+        },
+        "raw": {
+         "price": "813,90",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8001"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8001"
+       },
+       {
+        "index": 4,
+        "key": "HT-8002",
+        "issues": [],
+        "values": {
+         "price": "1208.90",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8002"
+        },
+        "raw": {
+         "price": "1.208,90",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8002"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8002"
+       },
+       {
+        "index": 5,
+        "key": "HT-8003",
+        "issues": [],
+        "values": {
+         "price": "1397.90",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8003"
+        },
+        "raw": {
+         "price": "1.397,90",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8003"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8003"
+       },
+       {
+        "index": 6,
+        "key": "HT-1000",
+        "issues": [],
+        "values": {
+         "price": "970.90",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1000"
+        },
+        "raw": {
+         "price": "970,90",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1000"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1000"
+       },
+       {
+        "index": 7,
+        "key": "HT-1001",
+        "issues": [],
+        "values": {
+         "price": "1263.90",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1001"
+        },
+        "raw": {
+         "price": "1.263,90",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1001"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1001"
+       },
+       {
+        "index": 8,
+        "key": "HT-1002",
+        "issues": [],
+        "values": {
+         "price": "1584.90",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1002"
+        },
+        "raw": {
+         "price": "1.584,90",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1002"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1002"
+       },
+       {
+        "index": 9,
+        "key": "HT-1003",
+        "issues": [],
+        "values": {
+         "price": "1664.90",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1003"
+        },
+        "raw": {
+         "price": "1.664,90",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1003"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1003"
+       },
+       {
+        "index": 10,
+        "key": "HT-1011",
+        "issues": [],
+        "values": {
+         "price": "2313.90",
+         "currency": "EUR",
+         "availability": "O",
+         "product_id": "HT-1011"
+        },
+        "raw": {
+         "price": "2.313,90",
+         "currency": "EUR",
+         "availability": "Out of Stock",
+         "product_id": "HT-1011"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1011"
+       }
+      ]
+     }
+    },
+    {
+     "id": "sap_1.96.0",
+     "variant": "base",
+     "version": "1.96.0",
+     "origin": "sap",
+     "category": "LT",
+     "category_name": "Laptops",
+     "role": "seen",
+     "expect": "export_all",
+     "ok": false,
+     "bench": {
+      "category": "LT",
+      "expected_n": 11,
+      "price_exact_n": 0,
+      "exported_n": 0,
+      "held_for_review_n": 0,
+      "wrong_accepted_n": 0,
+      "missing": [
+       "HT-1000",
+       "HT-1001",
+       "HT-1002",
+       "HT-1003",
+       "HT-1011",
+       "HT-1251",
+       "HT-1253",
+       "HT-8000",
+       "HT-8001",
+       "HT-8002",
+       "HT-8003"
+      ],
+      "unexpected": [],
+      "duplicated": [],
+      "rows": [
+       {
+        "product_id": "HT-1000",
+        "name": "Notebook Basic 15",
+        "exported": false,
+        "expected": {
+         "price": "956",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-1001",
+        "name": "Notebook Basic 17",
+        "exported": false,
+        "expected": {
+         "price": "1249",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-1002",
+        "name": "Notebook Basic 18",
+        "exported": false,
+        "expected": {
+         "price": "1570",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-1003",
+        "name": "Notebook Basic 19",
+        "exported": false,
+        "expected": {
+         "price": "1650",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-1011",
+        "name": "Notebook Professional 17",
+        "exported": false,
+        "expected": {
+         "price": "2299",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-1251",
+        "name": "Astro Laptop 1516",
+        "exported": false,
+        "expected": {
+         "price": "989",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-1253",
+        "name": "Benda Laptop 1408",
+        "exported": false,
+        "expected": {
+         "price": "976",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-8000",
+        "name": "ITelO FlexTop I4000",
+        "exported": false,
+        "expected": {
+         "price": "799",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-8001",
+        "name": "ITelO FlexTop I6300c",
+        "exported": false,
+        "expected": {
+         "price": "799",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-8002",
+        "name": "ITelO FlexTop I9100",
+        "exported": false,
+        "expected": {
+         "price": "1199",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-8003",
+        "name": "ITelO FlexTop I9800",
+        "exported": false,
+        "expected": {
+         "price": "1388",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       }
+      ]
+     },
+     "validator": {
+      "status": "needs_review",
+      "batch_issues": [
+       {
+        "kind": "navigation",
+        "detail": "timeout waiting for {'css': '#container-cart---homeView--categoryList ul[role=list]'}",
+        "scope": "batch"
+       }
+      ],
+      "review_n": 0,
+      "screen_count": null,
+      "records": []
+     }
+    },
+    {
+     "id": "base_mice",
+     "variant": "base",
+     "version": "1.154.0",
+     "origin": "sap",
+     "category": "MI",
+     "category_name": "Mice",
+     "role": "held_out",
+     "expect": "export_all",
+     "ok": true,
+     "bench": {
+      "category": "MI",
+      "expected_n": 7,
+      "price_exact_n": 7,
+      "exported_n": 7,
+      "held_for_review_n": 0,
+      "wrong_accepted_n": 0,
+      "missing": [],
+      "unexpected": [],
+      "duplicated": [],
+      "rows": [
+       {
+        "product_id": "HT-1060",
+        "name": "Cordless Mouse",
+        "exported": true,
+        "expected": {
+         "price": "9",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": "9.00",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1061",
+        "name": "Speed Mouse",
+        "exported": true,
+        "expected": {
+         "price": "7",
+         "currency": "EUR",
+         "availability": "D"
+        },
+        "got": {
+         "price": "7.00",
+         "currency": "EUR",
+         "availability": "D"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1062",
+        "name": "Track Mouse",
+        "exported": true,
+        "expected": {
+         "price": "11",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": "11.00",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1066",
+        "name": "Mousepad",
+        "exported": true,
+        "expected": {
+         "price": "6.99",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "6.99",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1067",
+        "name": "Ergo Mousepad",
+        "exported": true,
+        "expected": {
+         "price": "8.99",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": "8.99",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1068",
+        "name": "Designer Mousepad",
+        "exported": true,
+        "expected": {
+         "price": "12.99",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "12.99",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1138",
+        "name": "Pocket Mouse",
+        "exported": true,
+        "expected": {
+         "price": "23",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "23.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       }
+      ]
+     },
+     "validator": {
+      "status": "pass",
+      "batch_issues": [],
+      "review_n": 0,
+      "screen_count": 7,
+      "records": [
+       {
+        "index": 0,
+        "key": "HT-1060",
+        "issues": [],
+        "values": {
+         "price": "9.00",
+         "currency": "EUR",
+         "availability": "O",
+         "product_id": "HT-1060"
+        },
+        "raw": {
+         "price": "9,00",
+         "currency": "EUR",
+         "availability": "Out of Stock",
+         "product_id": "HT-1060"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1060"
+       },
+       {
+        "index": 1,
+        "key": "HT-1068",
+        "issues": [],
+        "values": {
+         "price": "12.99",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1068"
+        },
+        "raw": {
+         "price": "12,99",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1068"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1068"
+       },
+       {
+        "index": 2,
+        "key": "HT-1067",
+        "issues": [],
+        "values": {
+         "price": "8.99",
+         "currency": "EUR",
+         "availability": "O",
+         "product_id": "HT-1067"
+        },
+        "raw": {
+         "price": "8,99",
+         "currency": "EUR",
+         "availability": "Out of Stock",
+         "product_id": "HT-1067"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1067"
+       },
+       {
+        "index": 3,
+        "key": "HT-1066",
+        "issues": [],
+        "values": {
+         "price": "6.99",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1066"
+        },
+        "raw": {
+         "price": "6,99",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1066"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1066"
+       },
+       {
+        "index": 4,
+        "key": "HT-1138",
+        "issues": [],
+        "values": {
+         "price": "23.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1138"
+        },
+        "raw": {
+         "price": "23,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1138"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1138"
+       },
+       {
+        "index": 5,
+        "key": "HT-1061",
+        "issues": [],
+        "values": {
+         "price": "7.00",
+         "currency": "EUR",
+         "availability": "D",
+         "product_id": "HT-1061"
+        },
+        "raw": {
+         "price": "7,00",
+         "currency": "EUR",
+         "availability": "Discontinued",
+         "product_id": "HT-1061"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1061"
+       },
+       {
+        "index": 6,
+        "key": "HT-1062",
+        "issues": [],
+        "values": {
+         "price": "11.00",
+         "currency": "EUR",
+         "availability": "O",
+         "product_id": "HT-1062"
+        },
+        "raw": {
+         "price": "11,00",
+         "currency": "EUR",
+         "availability": "Out of Stock",
+         "product_id": "HT-1062"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1062"
+       }
+      ]
+     }
+    },
+    {
+     "id": "shipping_banner_mice",
+     "variant": "shipping_banner",
+     "version": "1.154.0",
+     "origin": "round 1",
+     "category": "MI",
+     "category_name": "Mice",
+     "role": "held_out",
+     "expect": "export_all",
+     "ok": true,
+     "bench": {
+      "category": "MI",
+      "expected_n": 7,
+      "price_exact_n": 7,
+      "exported_n": 7,
+      "held_for_review_n": 0,
+      "wrong_accepted_n": 0,
+      "missing": [],
+      "unexpected": [],
+      "duplicated": [],
+      "rows": [
+       {
+        "product_id": "HT-1060",
+        "name": "Cordless Mouse",
+        "exported": true,
+        "expected": {
+         "price": "9",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": "9.00",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1061",
+        "name": "Speed Mouse",
+        "exported": true,
+        "expected": {
+         "price": "7",
+         "currency": "EUR",
+         "availability": "D"
+        },
+        "got": {
+         "price": "7.00",
+         "currency": "EUR",
+         "availability": "D"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1062",
+        "name": "Track Mouse",
+        "exported": true,
+        "expected": {
+         "price": "11",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": "11.00",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1066",
+        "name": "Mousepad",
+        "exported": true,
+        "expected": {
+         "price": "6.99",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "6.99",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1067",
+        "name": "Ergo Mousepad",
+        "exported": true,
+        "expected": {
+         "price": "8.99",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": "8.99",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1068",
+        "name": "Designer Mousepad",
+        "exported": true,
+        "expected": {
+         "price": "12.99",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "12.99",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1138",
+        "name": "Pocket Mouse",
+        "exported": true,
+        "expected": {
+         "price": "23",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "23.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       }
+      ]
+     },
+     "validator": {
+      "status": "pass",
+      "batch_issues": [],
+      "review_n": 0,
+      "screen_count": 7,
+      "records": [
+       {
+        "index": 0,
+        "key": "HT-1060",
+        "issues": [],
+        "values": {
+         "price": "9.00",
+         "currency": "EUR",
+         "availability": "O",
+         "product_id": "HT-1060"
+        },
+        "raw": {
+         "price": "9,00",
+         "currency": "EUR",
+         "availability": "Out of Stock",
+         "product_id": "HT-1060"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1060"
+       },
+       {
+        "index": 1,
+        "key": "HT-1068",
+        "issues": [],
+        "values": {
+         "price": "12.99",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1068"
+        },
+        "raw": {
+         "price": "12,99",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1068"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1068"
+       },
+       {
+        "index": 2,
+        "key": "HT-1067",
+        "issues": [],
+        "values": {
+         "price": "8.99",
+         "currency": "EUR",
+         "availability": "O",
+         "product_id": "HT-1067"
+        },
+        "raw": {
+         "price": "8,99",
+         "currency": "EUR",
+         "availability": "Out of Stock",
+         "product_id": "HT-1067"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1067"
+       },
+       {
+        "index": 3,
+        "key": "HT-1066",
+        "issues": [],
+        "values": {
+         "price": "6.99",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1066"
+        },
+        "raw": {
+         "price": "6,99",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1066"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1066"
+       },
+       {
+        "index": 4,
+        "key": "HT-1138",
+        "issues": [],
+        "values": {
+         "price": "23.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1138"
+        },
+        "raw": {
+         "price": "23,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1138"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1138"
+       },
+       {
+        "index": 5,
+        "key": "HT-1061",
+        "issues": [],
+        "values": {
+         "price": "7.00",
+         "currency": "EUR",
+         "availability": "D",
+         "product_id": "HT-1061"
+        },
+        "raw": {
+         "price": "7,00",
+         "currency": "EUR",
+         "availability": "Discontinued",
+         "product_id": "HT-1061"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1061"
+       },
+       {
+        "index": 6,
+        "key": "HT-1062",
+        "issues": [],
+        "values": {
+         "price": "11.00",
+         "currency": "EUR",
+         "availability": "O",
+         "product_id": "HT-1062"
+        },
+        "raw": {
+         "price": "11,00",
+         "currency": "EUR",
+         "availability": "Out of Stock",
+         "product_id": "HT-1062"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1062"
+       }
+      ]
+     }
+    },
+    {
+     "id": "delivered_price_mice",
+     "variant": "delivered_price",
+     "version": "1.154.0",
+     "origin": "round 2",
+     "category": "MI",
+     "category_name": "Mice",
+     "role": "held_out",
+     "expect": "export_all",
+     "ok": false,
+     "bench": {
+      "category": "MI",
+      "expected_n": 7,
+      "price_exact_n": 0,
+      "exported_n": 7,
+      "held_for_review_n": 0,
+      "wrong_accepted_n": 7,
+      "missing": [],
+      "unexpected": [],
+      "duplicated": [],
+      "rows": [
+       {
+        "product_id": "HT-1060",
+        "name": "Cordless Mouse",
+        "exported": true,
+        "expected": {
+         "price": "9",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": "13.90",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "wrong_fields": [
+         "price"
+        ]
+       },
+       {
+        "product_id": "HT-1061",
+        "name": "Speed Mouse",
+        "exported": true,
+        "expected": {
+         "price": "7",
+         "currency": "EUR",
+         "availability": "D"
+        },
+        "got": {
+         "price": "11.90",
+         "currency": "EUR",
+         "availability": "D"
+        },
+        "wrong_fields": [
+         "price"
+        ]
+       },
+       {
+        "product_id": "HT-1062",
+        "name": "Track Mouse",
+        "exported": true,
+        "expected": {
+         "price": "11",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": "15.90",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "wrong_fields": [
+         "price"
+        ]
+       },
+       {
+        "product_id": "HT-1066",
+        "name": "Mousepad",
+        "exported": true,
+        "expected": {
+         "price": "6.99",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "21.89",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": [
+         "price"
+        ]
+       },
+       {
+        "product_id": "HT-1067",
+        "name": "Ergo Mousepad",
+        "exported": true,
+        "expected": {
+         "price": "8.99",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": "23.89",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "wrong_fields": [
+         "price"
+        ]
+       },
+       {
+        "product_id": "HT-1068",
+        "name": "Designer Mousepad",
+        "exported": true,
+        "expected": {
+         "price": "12.99",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "27.89",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": [
+         "price"
+        ]
+       },
+       {
+        "product_id": "HT-1138",
+        "name": "Pocket Mouse",
+        "exported": true,
+        "expected": {
+         "price": "23",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "27.90",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": [
+         "price"
+        ]
+       }
+      ]
+     },
+     "validator": {
+      "status": "pass",
+      "batch_issues": [],
+      "review_n": 0,
+      "screen_count": 7,
+      "records": [
+       {
+        "index": 0,
+        "key": "HT-1060",
+        "issues": [],
+        "values": {
+         "price": "13.90",
+         "currency": "EUR",
+         "availability": "O",
+         "product_id": "HT-1060"
+        },
+        "raw": {
+         "price": "13,90",
+         "currency": "EUR",
+         "availability": "Out of Stock",
+         "product_id": "HT-1060"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1060"
+       },
+       {
+        "index": 1,
+        "key": "HT-1068",
+        "issues": [],
+        "values": {
+         "price": "27.89",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1068"
+        },
+        "raw": {
+         "price": "27,89",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1068"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1068"
+       },
+       {
+        "index": 2,
+        "key": "HT-1067",
+        "issues": [],
+        "values": {
+         "price": "23.89",
+         "currency": "EUR",
+         "availability": "O",
+         "product_id": "HT-1067"
+        },
+        "raw": {
+         "price": "23,89",
+         "currency": "EUR",
+         "availability": "Out of Stock",
+         "product_id": "HT-1067"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1067"
+       },
+       {
+        "index": 3,
+        "key": "HT-1066",
+        "issues": [],
+        "values": {
+         "price": "21.89",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1066"
+        },
+        "raw": {
+         "price": "21,89",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1066"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1066"
+       },
+       {
+        "index": 4,
+        "key": "HT-1138",
+        "issues": [],
+        "values": {
+         "price": "27.90",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1138"
+        },
+        "raw": {
+         "price": "27,90",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1138"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1138"
+       },
+       {
+        "index": 5,
+        "key": "HT-1061",
+        "issues": [],
+        "values": {
+         "price": "11.90",
+         "currency": "EUR",
+         "availability": "D",
+         "product_id": "HT-1061"
+        },
+        "raw": {
+         "price": "11,90",
+         "currency": "EUR",
+         "availability": "Discontinued",
+         "product_id": "HT-1061"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1061"
+       },
+       {
+        "index": 6,
+        "key": "HT-1062",
+        "issues": [],
+        "values": {
+         "price": "15.90",
+         "currency": "EUR",
+         "availability": "O",
+         "product_id": "HT-1062"
+        },
+        "raw": {
+         "price": "15,90",
+         "currency": "EUR",
+         "availability": "Out of Stock",
+         "product_id": "HT-1062"
+        },
+        "candidates": {},
+        "url_hash": "#/category/MI/product/HT-1062"
+       }
+      ]
+     }
+    },
+    {
+     "id": "sap_1.96.0_mice",
+     "variant": "base",
+     "version": "1.96.0",
+     "origin": "sap",
+     "category": "MI",
+     "category_name": "Mice",
+     "role": "held_out",
+     "expect": "export_all",
+     "ok": false,
+     "bench": {
+      "category": "MI",
+      "expected_n": 7,
+      "price_exact_n": 0,
+      "exported_n": 0,
+      "held_for_review_n": 0,
+      "wrong_accepted_n": 0,
+      "missing": [
+       "HT-1060",
+       "HT-1061",
+       "HT-1062",
+       "HT-1066",
+       "HT-1067",
+       "HT-1068",
+       "HT-1138"
+      ],
+      "unexpected": [],
+      "duplicated": [],
+      "rows": [
+       {
+        "product_id": "HT-1060",
+        "name": "Cordless Mouse",
+        "exported": false,
+        "expected": {
+         "price": "9",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-1061",
+        "name": "Speed Mouse",
+        "exported": false,
+        "expected": {
+         "price": "7",
+         "currency": "EUR",
+         "availability": "D"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-1062",
+        "name": "Track Mouse",
+        "exported": false,
+        "expected": {
+         "price": "11",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-1066",
+        "name": "Mousepad",
+        "exported": false,
+        "expected": {
+         "price": "6.99",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-1067",
+        "name": "Ergo Mousepad",
+        "exported": false,
+        "expected": {
+         "price": "8.99",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-1068",
+        "name": "Designer Mousepad",
+        "exported": false,
+        "expected": {
+         "price": "12.99",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-1138",
+        "name": "Pocket Mouse",
+        "exported": false,
+        "expected": {
+         "price": "23",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       }
+      ]
+     },
+     "validator": {
+      "status": "needs_review",
+      "batch_issues": [
+       {
+        "kind": "navigation",
+        "detail": "timeout waiting for {'css': '#container-cart---homeView--categoryList ul[role=list]'}",
+        "scope": "batch"
+       }
+      ],
+      "review_n": 0,
+      "screen_count": null,
+      "records": []
+     }
+    },
+    {
+     "id": "sap_1.120.30",
+     "variant": "base",
+     "version": "1.120.30",
+     "origin": "sap",
+     "category": "LT",
+     "category_name": "Laptops",
+     "role": "held_out",
+     "expect": "export_all",
+     "ok": false,
+     "bench": {
+      "category": "LT",
+      "expected_n": 11,
+      "price_exact_n": 0,
+      "exported_n": 0,
+      "held_for_review_n": 0,
+      "wrong_accepted_n": 0,
+      "missing": [
+       "HT-1000",
+       "HT-1001",
+       "HT-1002",
+       "HT-1003",
+       "HT-1011",
+       "HT-1251",
+       "HT-1253",
+       "HT-8000",
+       "HT-8001",
+       "HT-8002",
+       "HT-8003"
+      ],
+      "unexpected": [],
+      "duplicated": [],
+      "rows": [
+       {
+        "product_id": "HT-1000",
+        "name": "Notebook Basic 15",
+        "exported": false,
+        "expected": {
+         "price": "956",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-1001",
+        "name": "Notebook Basic 17",
+        "exported": false,
+        "expected": {
+         "price": "1249",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-1002",
+        "name": "Notebook Basic 18",
+        "exported": false,
+        "expected": {
+         "price": "1570",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-1003",
+        "name": "Notebook Basic 19",
+        "exported": false,
+        "expected": {
+         "price": "1650",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-1011",
+        "name": "Notebook Professional 17",
+        "exported": false,
+        "expected": {
+         "price": "2299",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-1251",
+        "name": "Astro Laptop 1516",
+        "exported": false,
+        "expected": {
+         "price": "989",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-1253",
+        "name": "Benda Laptop 1408",
+        "exported": false,
+        "expected": {
+         "price": "976",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-8000",
+        "name": "ITelO FlexTop I4000",
+        "exported": false,
+        "expected": {
+         "price": "799",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-8001",
+        "name": "ITelO FlexTop I6300c",
+        "exported": false,
+        "expected": {
+         "price": "799",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-8002",
+        "name": "ITelO FlexTop I9100",
+        "exported": false,
+        "expected": {
+         "price": "1199",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       },
+       {
+        "product_id": "HT-8003",
+        "name": "ITelO FlexTop I9800",
+        "exported": false,
+        "expected": {
+         "price": "1388",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": null,
+         "currency": null,
+         "availability": null
+        },
+        "wrong_fields": [],
+        "held_raw": null
+       }
+      ]
+     },
+     "validator": {
+      "status": "needs_review",
+      "batch_issues": [
+       {
+        "kind": "engine_error",
+        "detail": "TimeoutError: Locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"[data-rr=\\\"m7\\\"]\")\n    - locator resolved to <li data-rr=\"m7\" tabindex=\"-1\" role=\"listitem\" id=\"container-cart---category--p",
+        "scope": "batch"
+       },
+       {
+        "scope": "batch",
+        "kind": "count_mismatch",
+        "detail": "screen shows 11, extracted 0"
+       }
+      ],
+      "review_n": 0,
+      "screen_count": 11,
+      "records": []
+     }
+    },
+    {
+     "id": "sap_1.148.0",
+     "variant": "base",
+     "version": "1.148.0",
+     "origin": "sap",
+     "category": "LT",
+     "category_name": "Laptops",
+     "role": "held_out",
+     "expect": "export_all",
+     "ok": true,
+     "bench": {
+      "category": "LT",
+      "expected_n": 11,
+      "price_exact_n": 11,
+      "exported_n": 11,
+      "held_for_review_n": 0,
+      "wrong_accepted_n": 0,
+      "missing": [],
+      "unexpected": [],
+      "duplicated": [],
+      "rows": [
+       {
+        "product_id": "HT-1000",
+        "name": "Notebook Basic 15",
+        "exported": true,
+        "expected": {
+         "price": "956",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "956.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1001",
+        "name": "Notebook Basic 17",
+        "exported": true,
+        "expected": {
+         "price": "1249",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1249.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1002",
+        "name": "Notebook Basic 18",
+        "exported": true,
+        "expected": {
+         "price": "1570",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1570.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1003",
+        "name": "Notebook Basic 19",
+        "exported": true,
+        "expected": {
+         "price": "1650",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1650.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1011",
+        "name": "Notebook Professional 17",
+        "exported": true,
+        "expected": {
+         "price": "2299",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "got": {
+         "price": "2299.00",
+         "currency": "EUR",
+         "availability": "O"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1251",
+        "name": "Astro Laptop 1516",
+        "exported": true,
+        "expected": {
+         "price": "989",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "989.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-1253",
+        "name": "Benda Laptop 1408",
+        "exported": true,
+        "expected": {
+         "price": "976",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "976.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8000",
+        "name": "ITelO FlexTop I4000",
+        "exported": true,
+        "expected": {
+         "price": "799",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8001",
+        "name": "ITelO FlexTop I6300c",
+        "exported": true,
+        "expected": {
+         "price": "799",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8002",
+        "name": "ITelO FlexTop I9100",
+        "exported": true,
+        "expected": {
+         "price": "1199",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1199.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       },
+       {
+        "product_id": "HT-8003",
+        "name": "ITelO FlexTop I9800",
+        "exported": true,
+        "expected": {
+         "price": "1388",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "got": {
+         "price": "1388.00",
+         "currency": "EUR",
+         "availability": "A"
+        },
+        "wrong_fields": []
+       }
+      ]
+     },
+     "validator": {
+      "status": "pass",
+      "batch_issues": [],
+      "review_n": 0,
+      "screen_count": 11,
+      "records": [
+       {
+        "index": 0,
+        "key": "HT-1251",
+        "issues": [],
+        "values": {
+         "price": "989.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1251"
+        },
+        "raw": {
+         "price": "989,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1251"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1251"
+       },
+       {
+        "index": 1,
+        "key": "HT-1253",
+        "issues": [],
+        "values": {
+         "price": "976.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1253"
+        },
+        "raw": {
+         "price": "976,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1253"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1253"
+       },
+       {
+        "index": 2,
+        "key": "HT-8000",
+        "issues": [],
+        "values": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8000"
+        },
+        "raw": {
+         "price": "799,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8000"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8000"
+       },
+       {
+        "index": 3,
+        "key": "HT-8001",
+        "issues": [],
+        "values": {
+         "price": "799.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8001"
+        },
+        "raw": {
+         "price": "799,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8001"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8001"
+       },
+       {
+        "index": 4,
+        "key": "HT-8002",
+        "issues": [],
+        "values": {
+         "price": "1199.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8002"
+        },
+        "raw": {
+         "price": "1.199,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8002"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8002"
+       },
+       {
+        "index": 5,
+        "key": "HT-8003",
+        "issues": [],
+        "values": {
+         "price": "1388.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-8003"
+        },
+        "raw": {
+         "price": "1.388,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-8003"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-8003"
+       },
+       {
+        "index": 6,
+        "key": "HT-1000",
+        "issues": [],
+        "values": {
+         "price": "956.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1000"
+        },
+        "raw": {
+         "price": "956,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1000"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1000"
+       },
+       {
+        "index": 7,
+        "key": "HT-1001",
+        "issues": [],
+        "values": {
+         "price": "1249.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1001"
+        },
+        "raw": {
+         "price": "1.249,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1001"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1001"
+       },
+       {
+        "index": 8,
+        "key": "HT-1002",
+        "issues": [],
+        "values": {
+         "price": "1570.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1002"
+        },
+        "raw": {
+         "price": "1.570,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1002"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1002"
+       },
+       {
+        "index": 9,
+        "key": "HT-1003",
+        "issues": [],
+        "values": {
+         "price": "1650.00",
+         "currency": "EUR",
+         "availability": "A",
+         "product_id": "HT-1003"
+        },
+        "raw": {
+         "price": "1.650,00",
+         "currency": "EUR",
+         "availability": "Available",
+         "product_id": "HT-1003"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1003"
+       },
+       {
+        "index": 10,
+        "key": "HT-1011",
+        "issues": [],
+        "values": {
+         "price": "2299.00",
+         "currency": "EUR",
+         "availability": "O",
+         "product_id": "HT-1011"
+        },
+        "raw": {
+         "price": "2.299,00",
+         "currency": "EUR",
+         "availability": "Out of Stock",
+         "product_id": "HT-1011"
+        },
+        "candidates": {},
+        "url_hash": "#/category/LT/product/HT-1011"
+       }
+      ]
+     }
+    }
+   ]
+  }
+ ]
+}

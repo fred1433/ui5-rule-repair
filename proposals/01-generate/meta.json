@@ -1,0 +1,15 @@
+{
+  "kind": "generate",
+  "created_utc": "2026-11-06T13:11:43Z",
+  "made_with": "claude -p (Claude subscription, all tools disabled, empty working folder)",
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "duration_ms": 16064,
+  "input_file": "observations.json",
+  "input_sha256": "375df4510f7f73a5b730f0e7c0eed656d8bc42801b07b138837fb4bb8ba1e602",
+  "prompt_sha256": "05dc0a0bb46c4ec69f7b617cd429e399a7ec9c6d66bcc2b9c640432750c5ac21",
+  "parent_rule_sha256": null,
+  "rule_sha256": "c924540a126d6e896ca705d90333d69ad12af445f5e5a772cbb94dbc6050924d",
+  "static_check_errors": []
+}

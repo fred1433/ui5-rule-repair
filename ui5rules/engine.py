@@ -290,5 +290,5 @@ def run_rule(page: Page, app_url: str, rule: dict, params: dict | None = None) -
     except RuleRuntimeError as e:
         run["batch_issues"].append({"kind": "navigation", "detail": str(e)})
     except Exception as e:  # browser-level failure: reported, not hidden
-        run["batch_issues"].append({"kind": "engine_error", "detail": f"{type(e).__name__}: {str(e)[:200]}"})
+        run["batch_issues"].append({"kind": "engine_error", "detail": f"{type(e).__name__}: {str(e)[:1500]}"})
     return run

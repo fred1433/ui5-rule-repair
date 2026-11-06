@@ -34,8 +34,12 @@ def variant_names() -> list[str]:
     return names
 
 
-def app_url(base: str, variant: str = "base") -> str:
-    return f"{base}/{variant}/{APP_PREFIX}index.html"
+def app_prefix(version: str = UI5_VERSION) -> str:
+    return f"{version}/test-resources/sap/m/demokit/cart/webapp/"
+
+
+def app_url(base: str, variant: str = "base", version: str = UI5_VERSION) -> str:
+    return f"{base}/{variant}/{app_prefix(version)}index.html"
 
 
 class _Handler(SimpleHTTPRequestHandler):
@@ -50,7 +54,7 @@ class _Handler(SimpleHTTPRequestHandler):
         variant, _, rest = path.partition("/")
         if variant not in variant_names() or ".." in rest:
             return self._send(404, b"unknown variant", "text/plain")
-        if rest == APP_PREFIX + "Component-preload.js":
+        if rest.endswith("/demokit/cart/webapp/Component-preload.js"):
             return self._send(404, b"preload disabled", "text/plain")
         body = None
         if variant != "base" and rest.startswith(APP_PREFIX):
@@ -110,8 +114,8 @@ class LocalCopy:
         self.httpd.shutdown()
         self.httpd.server_close()
 
-    def url(self, variant: str = "base") -> str:
-        return app_url(self.base, variant)
+    def url(self, variant: str = "base", version: str = UI5_VERSION) -> str:
+        return app_url(self.base, variant, version)
 
 
 if __name__ == "__main__":

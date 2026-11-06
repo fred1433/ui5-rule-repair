@@ -22,10 +22,10 @@ ROOT = Path(__file__).resolve().parent.parent
 RESULTS = ROOT / "results"
 
 
-def _observe(browser, local, variant: str) -> dict:
+def _observe(browser, local, variant: str, version: str = "1.154.0") -> dict:
     ctx, page = bench.new_page(browser)
     try:
-        return observe(page, local.url(variant), "Laptops")
+        return observe(page, local.url(variant, version), "Laptops")
     finally:
         ctx.close()
 
@@ -34,7 +34,7 @@ def _summary_rows(stage_name: str, results: list[dict]) -> list[str]:
     rows = []
     for r in results:
         b = r["bench"]
-        rows.append(f"| {stage_name} | {r['variant']} | {r['category_name']}{' (held out)' if r['role'] == 'held_out' else ''} "
+        rows.append(f"| {stage_name} | {r['id']} ({r['origin']}) | {r['category_name']}{' (held out)' if r['role'] == 'held_out' else ''} "
                     f"| {b['price_exact_n']}/{b['expected_n']} | {b['held_for_review_n']} | {b['wrong_accepted_n']} "
                     f"| {len(b['missing'])}/{len(b['unexpected'])}/{len(b['duplicated'])} "
                     f"| {'as expected' if r['ok'] else 'FAILED'} |")
@@ -44,7 +44,7 @@ def _summary_rows(stage_name: str, results: list[dict]) -> list[str]:
 def _compact(results: list[dict]) -> list[dict]:
     out = []
     for r in results:
-        out.append({k: r[k] for k in ("variant", "category", "category_name", "role", "expect", "ok")} | {
+        out.append({k: r[k] for k in ("id", "variant", "version", "origin", "category", "category_name", "role", "expect", "ok")} | {
             "bench": r["bench"],
             "validator": {k: r["validator"][k] for k in ("status", "batch_issues", "review_n", "screen_count")}
                          | {"records": r["validator"]["records"]},
@@ -86,7 +86,7 @@ def replay(write: bool = True) -> int:
                 results = bench.run_all(browser, local, rule)
                 stages.append({"proposal": link.name, "meta": meta, "rule": rule, "results": results})
         browser.close()
-    table = ["| Rule | App version | Category | Prices exact / expected | Held for review | Wrong values exported "
+    table = ["| Rule | Scenario | Category | Prices exact / expected | Held for review | Wrong values exported "
              "| Missing / unexpected / duplicated ids | Result |", "|---|---|---|---|---|---|---|---|"]
     for st in stages:
         table += _summary_rows(st["proposal"], st["results"])
@@ -127,7 +127,11 @@ def repair() -> int:
         if not report["failing_scenarios"]:
             print("Nothing to repair: every scenario shown to the model behaves as expected.")
             return 0
-        walks = [dict(_observe(browser, local, s["variant"]), variant=s["variant"]) for s in report["failing_scenarios"]]
+        by_id = {sc["id"]: sc for sc in bench.SCENARIOS}
+        walks = []
+        for s in report["failing_scenarios"]:
+            sc = by_id[s["scenario"]]
+            walks.append(dict(_observe(browser, local, sc["variant"], sc["version"]), variant=s["app_version"]))
         browser.close()
     prompt = agent.repair_prompt(rule, report, {"walks": walks})
     answer = agent.call_model(prompt)

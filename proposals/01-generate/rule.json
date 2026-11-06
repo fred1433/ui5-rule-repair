@@ -1,0 +1,98 @@
+{
+  "format": "ui5-rule-repair/rule@1",
+  "name": "Product catalog - {category} - id, price, currency, availability",
+  "parameters": {
+    "category": "Laptops"
+  },
+  "steps": [
+    {
+      "action": "wait_for",
+      "target": {
+        "css": "#container-cart---homeView--categoryList ul[role=list]"
+      }
+    },
+    {
+      "action": "read_count",
+      "target": {
+        "css": "div.sapMLIBCounter",
+        "within": {
+          "role": "listitem",
+          "has_text": "{category}",
+          "within": {
+            "css": "#container-cart---homeView--categoryList"
+          }
+        }
+      },
+      "regex": "(\\d+)"
+    },
+    {
+      "action": "click",
+      "target": {
+        "text": "{category}",
+        "within": {
+          "css": "#container-cart---homeView--categoryList"
+        }
+      },
+      "then_wait_for": {
+        "role": "main",
+        "name": "{category} Items of Category"
+      }
+    },
+    {
+      "action": "wait_for",
+      "target": {
+        "css": "#container-cart---category--productList li.sapMLIB",
+        "pick": "first"
+      }
+    }
+  ],
+  "items": {
+    "locator": {
+      "css": "#container-cart---category--productList li.sapMLIB"
+    },
+    "open": true,
+    "detail_ready": {
+      "css": "#container-cart---product--page .sapMOHTitle"
+    }
+  },
+  "fields": {
+    "product_id": {
+      "from": "url",
+      "regex": "/product/([^/?#]+)",
+      "type": "id",
+      "pattern": "[A-Z]+-\\d+"
+    },
+    "price": {
+      "from": "item",
+      "locator": {
+        "css": ".sapMObjectNumber .sapMObjectNumberText"
+      },
+      "type": "decimal",
+      "number_format": {
+        "decimal": ",",
+        "group": "."
+      }
+    },
+    "currency": {
+      "from": "item",
+      "locator": {
+        "css": ".sapMObjectNumber .sapMObjectNumberUnit"
+      },
+      "type": "currency_code"
+    },
+    "availability": {
+      "from": "item",
+      "locator": {
+        "css": ".sapMObjStatus .sapMObjStatusText"
+      },
+      "type": "enum",
+      "map": {
+        "Available": "A",
+        "Out of Stock": "O",
+        "Discontinued": "D"
+      }
+    }
+  },
+  "key": "product_id",
+  "count_check": true
+}
