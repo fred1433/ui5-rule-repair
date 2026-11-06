@@ -1,0 +1,18 @@
+{
+  "format": "ui5-rule-repair/rule@1",
+  "name": "engine test rule (hand-written, used only by the unit tests)",
+  "parameters": {"category": "Laptops"},
+  "steps": [
+    {"action": "read_count", "target": {"css": ".sapMLIBCounter", "within": {"css": "li", "has_text": "{category}"}}, "regex": "(\\d+)"},
+    {"action": "click", "target": {"text": "{category}"}, "then_wait_for": {"css": "[id$='---category--productList'] li", "pick": "first"}}
+  ],
+  "items": {"locator": {"css": "[id$='---category--productList'] li[role=listitem]"}, "open": true, "detail_ready": {"css": "[id$='---product'] .sapMOH"}},
+  "fields": {
+    "product_id": {"from": "url", "regex": "/product/([^/?]+)", "type": "id", "pattern": "[A-Z]{2}-\\d{4}"},
+    "price": {"from": "detail", "locator": {"css": ".sapMOHNumberDiv .sapMObjectNumberText", "within": {"css": "[id$='---product']"}}, "type": "decimal", "number_format": {"decimal": ",", "group": "."}},
+    "currency": {"from": "detail", "locator": {"css": ".sapMOHNumberDiv .sapMObjectNumberUnit", "within": {"css": "[id$='---product']"}}, "type": "currency_code"},
+    "availability": {"from": "detail", "locator": {"css": ".sapMOH .sapMObjStatusText", "within": {"css": "[id$='---product']"}}, "type": "enum", "map": {"Available": "A", "Out of Stock": "O", "Discontinued": "D"}}
+  },
+  "key": "product_id",
+  "count_check": true
+}
