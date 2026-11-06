@@ -243,13 +243,23 @@ def run_rule(page: Page, app_url: str, rule: dict, params: dict | None = None) -
             if st["action"] == "wait_for":
                 _wait_for(page, st["target"])
             elif st["action"] == "click":
+                _wait_for(page, st["target"])
+                settle(page)  # UI5 re-renders right after data arrives; click the settled element
                 r = _wait_for(page, st["target"])
                 mark, issue = _pick(st["target"], r)
                 if issue:
                     raise RuleRuntimeError(f"step {i} click target {issue['kind']}: {issue['detail']}")
+                url_before = page.url
                 page.locator(f'[data-rr="{mark}"]').click()
                 if st.get("then_wait_for"):
-                    _wait_for(page, st["then_wait_for"])
+                    try:
+                        _wait_for(page, st["then_wait_for"], timeout_s=6)
+                    except RuleRuntimeError:
+                        # Some UI5 releases swallow the first click on a list item: one retry, then give up.
+                        r = _find(page, st["target"])
+                        if page.url == url_before and len(r["marks"]) == 1:
+                            page.locator(f'[data-rr="{r["marks"][0]}"]').click()
+                        _wait_for(page, st["then_wait_for"], timeout_s=14)
                 settle(page)
             elif st["action"] == "read_count":
                 r = _wait_for(page, st["target"])
@@ -261,6 +271,8 @@ def run_rule(page: Page, app_url: str, rule: dict, params: dict | None = None) -
                     raise RuleRuntimeError(f"step {i} count regex did not match")
                 run["screen_count"] = int(m.group(1))
         items = rule["items"]
+        _wait_for(page, items["locator"])
+        settle(page)
         first = _wait_for(page, items["locator"])
         n = len(first["marks"])
         for idx in range(n):
@@ -274,8 +286,15 @@ def run_rule(page: Page, app_url: str, rule: dict, params: dict | None = None) -
                 if f["from"] == "item":
                     rec["fields"][name] = _read_field(page, name, f, mark)
             if items.get("open"):
+                url_before = page.url
                 page.locator(f'[data-rr="{mark}"]').click()
                 settle(page)
+                if page.url == url_before and idx == 0:
+                    # same one-retry policy as for steps: the first click may be swallowed
+                    r2 = _find(page, items["locator"])
+                    if len(r2["marks"]) == n:
+                        page.locator(f'[data-rr="{r2["marks"][idx]}"]').click()
+                        settle(page)
                 if items.get("detail_ready"):
                     try:
                         _wait_for(page, items["detail_ready"], timeout_s=10)

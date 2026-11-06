@@ -68,10 +68,17 @@ def _hash(page: Page) -> str:
 
 
 def _click_text(page: Page, text: str):
+    _wait_for(page, {"text": text}, timeout_s=60)
+    settle(page)
     r = _wait_for(page, {"text": text}, timeout_s=60)
     if len(r["marks"]) != 1:
         raise RuntimeError(f"observer: {len(r['marks'])} visible elements show {text!r}")
+    before = page.url
     page.locator(f'[data-rr="{r["marks"][0]}"]').click()
+    settle(page)
+    if page.url == before:  # some UI5 releases swallow the first click: one retry
+        r = _wait_for(page, {"text": text}, timeout_s=10)
+        page.locator(f'[data-rr="{r["marks"][0]}"]').click()
 
 
 def observe(page: Page, app_url: str, category: str, products: int = 2) -> dict:
@@ -88,7 +95,12 @@ def observe(page: Page, app_url: str, category: str, products: int = 2) -> dict:
     for i in range(products):
         page.evaluate(RESOLVER_JS)
         items = page.evaluate("([s]) => window.__rr.run(s, null)", [{"css": VIEW_ROOTS["category"] + " ul > li"}])
+        before = page.url
         page.locator(f'[data-rr="{items["marks"][i]}"]').click()
+        settle(page)
+        if page.url == before:  # one retry, as for the category click
+            items = page.evaluate("([s]) => window.__rr.run(s, null)", [{"css": VIEW_ROOTS["category"] + " ul > li"}])
+            page.locator(f'[data-rr="{items["marks"][i]}"]').click()
         page.wait_for_selector(VIEW_ROOTS["product"], timeout=30000)
         settle(page)
         time.sleep(0.2)
